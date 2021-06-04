@@ -1,7 +1,5 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,5 +10,15 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::middleware(['auth'])->group(function () {
+  Route::get('/', function() {
+    return Auth::user();
+  });
+  Route::resource('tasks', TaskController::class);
+});
+Route::middleware(['guest'])->group(function () {
+  Route::get('/login', 'UserController@index')->name('login');
+  Route::get('/register', 'UserController@register');
+});
 
-Route::get('/login', 'UserController@index');
+

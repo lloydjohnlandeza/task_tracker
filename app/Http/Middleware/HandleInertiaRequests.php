@@ -37,7 +37,10 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request)
     {
         return array_merge(parent::share($request), [
-          'appName' => preg_replace('/(?<!\ )[A-Z]/', ' $0', config('app.name')) //get app name & add space every capital
+          'appName' => preg_replace('/(?<!\ )[A-Z]/', ' $0', config('app.name')), //get app name & add space every capital letter
+          'user' => fn () => $request->user()
+            ? $request->user()->only('id', 'name', 'email')
+            : null,
         ]);
     }
 }

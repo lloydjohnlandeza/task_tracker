@@ -22,7 +22,7 @@
                 justify-space-between
               >
                 <h3 class="headline">
-                  {{ appName }}
+                  Register
                 </h3>
               </v-layout>
             </v-card-title>
@@ -36,39 +36,49 @@
                 :error-messages="errors.email"
               />
               <v-text-field
+                v-model="form.name"
+                outlined
+                label="Name"
+                type="text"
+                :error-messages="errors.name"
+              />
+              <v-text-field
                 v-model="form.password"
                 outlined
                 label="Password"
                 type="password"
-                :hide-details="!errors.password"
                 :error-messages="errors.password"
+              />
+              <v-text-field
+                v-model="form.password_confirmation"
+                outlined
+                label="Confirm Password"
+                type="password"
+                :hide-details="!errors.password_confirmation"
+                :error-messages="errors.password_confirmation"
               />
             </v-card-text>
             <v-divider />
             <v-card-actions :class="{ 'pa-3': $vuetify.breakpoint.smAndUp }">
-              <v-flex justify-center>
-                <v-btn
-                  color="primary"
-                  :loading="loading"
-                  :large="$vuetify.breakpoint.smAndUp"
-                  block
-                  @click="submit"
-                >
-                  Login
-                </v-btn>
-                <p class="mb-0 mt-2 body-2 text-center">
-                  <span class="font-italic">Don't have an account yet?</span>
-                  <v-btn
-                    class="pa-0 text-capitalize"
-                    color="green"
-                    text
-                    @click="$inertia.get('/register')"
-                  >Create one</v-btn>
-                </p> 
-              </v-flex>
+              <v-spacer />
+              <v-btn
+                class="mr-2"
+                color="info"
+                text
+                @click="$inertia.get('/login')"
+              >
+                Back
+              </v-btn>
+              <v-btn
+                color="primary"
+                :loading="loading"
+                :large="$vuetify.breakpoint.smAndUp"
+                @click="submit"
+              >
+                Register
+              </v-btn>
             </v-card-actions>
           </v-card>
-          
         </v-flex>
       </v-layout>
     </v-container>
@@ -84,8 +94,10 @@
     data () {
       return {
         form: {
+          name: null,
           password: null,
           email: null,
+          password_confirmation: null,
         },
         loading: false,
       }
@@ -94,7 +106,7 @@
       async submit () {
         const { form } = this
         this.loading = true
-        this.$inertia.post('login', form, {
+        this.$inertia.post('register', form, {
           preserveScroll: true,
           onSuccess: () => {
             this.loading = false
