@@ -8,30 +8,29 @@
           flat
         >
           <v-toolbar-title>My tasks</v-toolbar-title>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            class="mb-2 mr-2"
-            @click="download"
-          >
-            Download Data
-          </v-btn>
-          
-          <v-btn
-            color="primary"
-            class="mb-2 mr-2"
-            @click="() => $inertia.visit('tasks/main/deleted')"
-          >
-            Deleted Tasks
-          </v-btn>
-          <v-btn
-            color="primary"
-            class="mb-2"
-            @click="dialog = true"
-          >
-            New Task
-          </v-btn>
         </v-toolbar>
+        <v-btn
+          color="primary"
+          class="mb-2 mr-2"
+          @click="download"
+        >
+          Download
+        </v-btn>
+
+        <v-btn
+          color="primary"
+          class="mb-2 mr-2"
+          @click="() => $inertia.visit('tasks/main/deleted')"
+        >
+          View Deleted
+        </v-btn>
+        <v-btn
+          color="primary"
+          class="mb-2"
+          @click="dialog = true"
+        >
+          New Task
+        </v-btn>
       </v-card-title>
       <v-list>
         <v-subheader>
@@ -44,16 +43,21 @@
             <span class="text-center font-weight-bold">Actions</span>
           </v-toolbar>
         </v-subheader>
-        <recursive-list
-          v-for="task in tasks" 
-          :key="task.id"
-          :currentTask="task"
-          :tasks="task.deep_sub_tasks"
-          :onViewDeleted="(id) => $inertia.visit(`tasks/${id}/deleted`)"
-          :onDeleteTask="onDeleteTask"
-          :onEdit="onEdit"
-          :onAddSubtask="onAddSubtask"
-        />
+        <template v-if="tasks.length > 0">
+          <recursive-list
+            v-for="task in tasks" 
+            :key="task.id"
+            :currentTask="task"
+            :tasks="task.deep_sub_tasks"
+            :onViewDeleted="(id) => $inertia.visit(`tasks/${id}/deleted`)"
+            :onDeleteTask="onDeleteTask"
+            :onEdit="onEdit"
+            :onAddSubtask="onAddSubtask"
+          />
+        </template>
+        <v-card-title class="justify-center grey--text" v-else>
+          <div class="text-center font-italic font-weight-light">No Task Yet</div>
+        </v-card-title>
       </v-list>
     </v-card>
     <v-dialog
@@ -161,6 +165,7 @@
           }
         }
         this.isSubmitting = false
+        this.parent_id = null
       },
       async updateTask (params) {
         this.isSubmitting = true
@@ -303,5 +308,9 @@
       grid-template-columns: 1fr 6.25rem 6.25rem;
       grid-gap: 1rem;
     }
+  }
+  .table-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
   }
 </style>

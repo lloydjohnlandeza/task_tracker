@@ -16,13 +16,13 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
         DB::table('task_statuses')->insert([
           [
-            'status' => "complete"
+            'status' => "Complete"
           ],
           [
-            'status' => "pending"
+            'status' => "Pending"
           ],
           [
-            'status' => "cancel"
+            'status' => "Cancel"
           ],
       ]);
     }

@@ -33,16 +33,21 @@
             <span class="text-center font-weight-bold">Status</span>
             <span class="text-center font-weight-bold">Actions</span>
           </v-toolbar>
-        </v-subheader>  
-        <recursive-list
-          v-for="task in tasks"
-          isShowingDeletedTasks
-          subtask_name="deleted_deep_sub_tasks"
-          :key="task.id"
-          :currentTask="task"
-          :tasks="task.deleted_deep_sub_tasks"
-          :onRestoreTask="onRestoreTask"
-        />
+        </v-subheader>
+        <template v-if="tasks.length > 0">
+          <recursive-list
+            v-for="task in tasks"
+            isShowingDeletedTasks
+            subtask_name="deleted_deep_sub_tasks"
+            :key="task.id"
+            :currentTask="task"
+            :tasks="task.deleted_deep_sub_tasks"
+            :onRestoreTask="onRestoreTask"
+          />
+        </template>
+        <v-card-title class="justify-center grey--text" v-else>
+          <div class="text-center font-italic font-weight-light">No Deleted Task</div>
+        </v-card-title>
       </v-list>
     </v-card>
     <v-dialog

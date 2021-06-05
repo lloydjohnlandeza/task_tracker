@@ -63,7 +63,7 @@ class TaskController extends Controller
       $parent_id = $request->input('parent_id') ? $request->input('parent_id') : 0;
       // find or create status
       $status = TaskStatus::select('id')->firstOrCreate([
-        'status' =>  $request->input('status')
+        'status' =>  ucwords($request->input('status'))
       ]);
 
       // create task
@@ -116,7 +116,7 @@ class TaskController extends Controller
         $parent_id = $request->input('parent_id') ? $request->input('parent_id') : 0;
         // find or create status
         $status = TaskStatus::select('id')->firstOrCreate([
-          'status' =>  $request->input('status')
+          'status' =>  ucwords($request->input('status'))
         ]);
         // update task
         $update = Task::find($id);
