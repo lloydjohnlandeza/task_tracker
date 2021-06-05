@@ -8,6 +8,8 @@ use Inertia\Inertia;
 use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Models\Order;
+use App\Exports\TasksExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Auth;
 class TaskController extends Controller
 {
@@ -24,6 +26,7 @@ class TaskController extends Controller
                   ->orWhere('status', 'cancel')
                   ->pluck('status')->toArray();
       $tasks = Task::where('parent_id', 0)
+                  ->where('user_id', Auth::user()->id)
                   ->join('orders', 'orders.id', '=', 'tasks.order_id')
                   ->orderBy('orders.order' , 'asc')
                   ->with('deep_sub_tasks')
@@ -135,27 +138,14 @@ class TaskController extends Controller
         'id' => $id
       ]);
     }
-
-    // private function getTasksWithSubtask () {
-    //   $tasks = Task::where('parent_id', 0)
-    //   ->join('orders', 'orders.id', '=', 'tasks.order_id')
-    //   ->orderBy('orders.order' , 'asc')
-    //   ->get();
-    //   foreach ($tasks as $key => $task) {
-    //     // dd();
-    //     $task->sub_tasks = $task->sub_tasks();
-    //     dd($task);
-    //     // $task->sub_tasks = $this->getSubtask($task);
-    //   }
-    //   // dd($tasks);
-    // }
-    // private function getSubtask ($task) {
-    //   if (!$task) {
-    //     return $task;
-    //   }
-    //   $task->sub_tasks = $this->getSubtask($task->getRelation('sub_tasks'));
-    //   return $task;
-    // }
+    /**
+     * Download tasks as excel.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function export () {
+      return Excel::download(new TasksExport, 'tasks.xlsx');
+    }
     private function createOrder ($created) {
       // find max order of the tasks
       $max = Order::where('task_parent_id', $created->parent_id)->max('order');

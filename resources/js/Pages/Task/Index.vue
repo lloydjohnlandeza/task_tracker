@@ -12,10 +12,16 @@
           flat
         >
           <v-toolbar-title>My tasks</v-toolbar-title>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-btn
             color="primary"
-            dark
+            class="mb-2 mr-2"
+            @click="download"
+          >
+            Download Data
+          </v-btn>
+          <v-btn
+            color="primary"
             class="mb-2"
             @click="dialog = true"
           >
@@ -24,6 +30,16 @@
         </v-toolbar>
       </v-card-title>
       <v-list>
+        <v-subheader>
+          <v-toolbar
+            flat
+            class="custom-toolbar-grid"
+          >
+            <span class="font-weight-bold">Task Name</span>
+            <span class="text-center font-weight-bold">Status</span>
+            <span class="text-center font-weight-bold">Actions</span>
+          </v-toolbar>
+        </v-subheader>
         <recursive-list
           v-for="task in tasks" 
           :key="task.id"
@@ -35,96 +51,6 @@
         />
       </v-list>
     </v-card>
-    
-    <!-- <v-data-table
-      :headers="taskHeaders"
-      :items="tasks"
-      :single-expand="singleExpand"
-      :expanded.sync="expanded"
-      hide-default-footer
-      :footer-props="{
-        itemsPerPageOptions	: [-1]
-      }"
-      item-key="id"
-      show-expand
-      class="elevation-1"
-    >
-      <template v-slot:top>
-        <v-toolbar
-          flat
-        >
-          <v-toolbar-title>My tasks</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            dark
-            class="mb-2"
-            @click="dialog = true"
-          >
-            New Task
-          </v-btn>
-        </v-toolbar>
-      </template>
-      <template v-slot:body="{ items }">
-        <tbody>
-          <tr :key="key" v-for="(item, key) in items">
-            <td :key="tdKey" v-for="(header, tdKey) in taskHeaders">
-              <span v-if="header.value === 'data-table-expand'">
-                <div class="d-flex">
-                  <v-btn
-                    text
-                    fab
-                    x-small
-                    :loading="isDeleting && item.id === task.id"
-                    @click="deleteTask(item)"
-                  >
-                    <v-icon dark>
-                      mdi-delete
-                    </v-icon>
-                  </v-btn>
-                  <v-btn
-                    text
-                    fab
-                    x-small
-                    @click="onEdit(item)"
-                  >
-                    <v-icon dark>
-                      mdi-pencil
-                    </v-icon>
-                  </v-btn>
-                  <v-btn
-                    text
-                    fab
-                    x-small
-                    @click="onAddSubtask(item)"
-                  >
-                    <v-icon dark>
-                      mdi-file-tree
-                    </v-icon>
-                  </v-btn>
-                  <v-btn
-                    text
-                    fab
-                    x-small
-                  >
-                    <v-icon dark>
-                      mdi-reorder-horizontal
-                    </v-icon>
-                  </v-btn>
-                </div>
-              </span>
-              <span v-else-if="header.value === 'status'">
-                {{item[header.value]}}{{item.sub_tasks}}
-              </span>
-              <span v-else>
-                {{item[header.value]}} 
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </template>
-    </v-data-table> -->
-
     <v-dialog
       v-model="dialog"
       persistent
@@ -186,9 +112,6 @@
       }
     },
     methods: {
-      test () {
-        console.log('hi')
-      },
       async createTask (params) {
         this.isSubmitting = true
         const { taskForm } = this.$refs
@@ -203,6 +126,8 @@
           const { response } = err
           if (response && response.data && response.data.errors) {
             this.validationErrors = response.data.errors
+          } else {
+            console.log(err)
           }
         }
         this.isSubmitting = false
@@ -214,19 +139,20 @@
           ...params,
           parent_id,
         }
-        console.log(params)
         try {
           const { data } = await axios.post('/tasks', params).catch((err) => {
             throw(err)
           })
-          console.log(data)
-          // this.tasks.push(data)
+          let outdatedParentTask = this.parent(this.tasks, 'id', parent_id)
+          outdatedParentTask.deep_sub_tasks = [ ...outdatedParentTask.deep_sub_tasks, data]
           this.dialog = false
           taskForm && taskForm.clearForm()
         } catch (err) {
           const { response } = err
           if (response && response.data && response.data.errors) {
             this.validationErrors = response.data.errors
+          } else {
+            console.log(err)
           }
         }
         this.isSubmitting = false
@@ -236,17 +162,12 @@
         const { task, $refs } = this
         const { taskForm } = $refs
         try {
-          const { data } = await axios.put(`/tasks/${task.id}`, params).catch((err) => {
+          const { data } = await axios.put(`/tasks/${task.id}`, { ...params, parent_id: task.parent_id }).catch((err) => {
             throw(err)
           })
-          const newTasks = [...this.tasks]
-          const found = newTasks.findIndex(task => {
-            return task.id === task.id
-          })
-          if (found !== -1) {
-            newTasks[found] = data
-            this.tasks = newTasks
-          }
+          let outdatedTask = this.parent(this.tasks, 'id', task.id)
+          outdatedTask.task = data.task
+          outdatedTask.status = data.status
           this.dialog = false
           this.task = null
           taskForm && taskForm.clearForm()
@@ -254,6 +175,8 @@
           const { response } = err
           if (response && response.data && response.data.errors) {
             this.validationErrors = response.data.errors
+          } else {
+            console.log(err)
           }
         }
         this.isSubmitting = false
@@ -269,14 +192,7 @@
           await axios.delete(`/tasks/${selectedTask.id}`).catch((err) => {
             throw(err)
           })
-          const newTasks = [...this.tasks]
-          const found = newTasks.findIndex(task => {
-            return task.id === selectedTask.id
-          })
-          if (found !== -1) {
-            newTasks.splice(found, 1)
-            this.tasks = newTasks
-          }
+          this.deleteItems(this.tasks, selectedTask.id)
         } catch (err) {
           console.log(err)
         }
@@ -304,6 +220,30 @@
       async onAddSubtask (selectedTask) {
         this.parent_id = selectedTask.id
         this.dialog = true
+      },
+      parent (array, key, id) {
+        let o
+        array.some(function iter(a) {
+          if (a[key] === id) {
+            o = a
+            return true
+          }
+          return Array.isArray(a.deep_sub_tasks) && iter && a.deep_sub_tasks.some(iter)
+        })
+        return o
+      },
+      deleteItems(array, id) {
+        var i = array.length
+        while (i--) {
+          if (array[i].id === id) {
+            array.splice(i, 1)
+            return
+          }
+          array[i].deep_sub_tasks && this.deleteItems(array[i].deep_sub_tasks, id)
+        }
+      },
+      download () {
+        window.open('/tasks/download', '_blank')
       },
     },
     props: {
@@ -337,7 +277,11 @@
 </script>
 
 <style lang="scss">
-  ul {
-    list-style: none;
+  .custom-toolbar-grid {
+    .v-toolbar__content {
+      display: grid;
+      grid-template-columns: 1fr 6.25rem 6.25rem;
+      grid-gap: 1rem;
+    }
   }
 </style>

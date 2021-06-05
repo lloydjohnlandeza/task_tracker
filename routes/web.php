@@ -14,6 +14,7 @@ Route::middleware(['auth'])->group(function () {
   Route::get('/', function() {
     return Auth::user();
   });
+  Route::get('tasks/download', 'TaskController@export');
   Route::resource('tasks', TaskController::class);
 });
 Route::middleware(['guest'])->group(function () {

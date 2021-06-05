@@ -2039,80 +2039,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -2153,9 +2079,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     };
   },
   methods: {
-    test: function test() {
-      console.log('hi');
-    },
     createTask: function createTask(params) {
       var _this = this;
 
@@ -2192,6 +2115,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 if (response && response.data && response.data.errors) {
                   _this.validationErrors = response.data.errors;
+                } else {
+                  console.log(_context.t0);
                 }
 
               case 16:
@@ -2209,7 +2134,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this2 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2() {
-        var taskForm, _yield$axios$post$cat2, data, response;
+        var taskForm, _yield$axios$post$cat2, data, outdatedParentTask, response;
 
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee2$(_context2) {
           while (1) {
@@ -2220,18 +2145,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 params = _objectSpread(_objectSpread({}, params), {}, {
                   parent_id: parent_id
                 });
-                console.log(params);
-                _context2.prev = 4;
-                _context2.next = 7;
+                _context2.prev = 3;
+                _context2.next = 6;
                 return axios__WEBPACK_IMPORTED_MODULE_4___default().post('/tasks', params)["catch"](function (err) {
                   throw err;
                 });
 
-              case 7:
+              case 6:
                 _yield$axios$post$cat2 = _context2.sent;
                 data = _yield$axios$post$cat2.data;
-                console.log(data); // this.tasks.push(data)
-
+                outdatedParentTask = _this2.parent(_this2.tasks, 'id', parent_id);
+                outdatedParentTask.deep_sub_tasks = [].concat(_toConsumableArray(outdatedParentTask.deep_sub_tasks), [data]);
                 _this2.dialog = false;
                 taskForm && taskForm.clearForm();
                 _context2.next = 18;
@@ -2239,11 +2163,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 14:
                 _context2.prev = 14;
-                _context2.t0 = _context2["catch"](4);
+                _context2.t0 = _context2["catch"](3);
                 response = _context2.t0.response;
 
                 if (response && response.data && response.data.errors) {
                   _this2.validationErrors = response.data.errors;
+                } else {
+                  console.log(_context2.t0);
                 }
 
               case 18:
@@ -2254,14 +2180,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context2.stop();
             }
           }
-        }, _callee2, null, [[4, 14]]);
+        }, _callee2, null, [[3, 14]]);
       }))();
     },
     updateTask: function updateTask(params) {
       var _this3 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee3() {
-        var task, $refs, taskForm, _yield$axios$put$catc, data, newTasks, found, response;
+        var task, $refs, taskForm, _yield$axios$put$catc, data, outdatedTask, response;
 
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee3$(_context3) {
           while (1) {
@@ -2272,23 +2198,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 taskForm = $refs.taskForm;
                 _context3.prev = 3;
                 _context3.next = 6;
-                return axios__WEBPACK_IMPORTED_MODULE_4___default().put("/tasks/".concat(task.id), params)["catch"](function (err) {
+                return axios__WEBPACK_IMPORTED_MODULE_4___default().put("/tasks/".concat(task.id), _objectSpread(_objectSpread({}, params), {}, {
+                  parent_id: task.parent_id
+                }))["catch"](function (err) {
                   throw err;
                 });
 
               case 6:
                 _yield$axios$put$catc = _context3.sent;
                 data = _yield$axios$put$catc.data;
-                newTasks = _toConsumableArray(_this3.tasks);
-                found = newTasks.findIndex(function (task) {
-                  return task.id === task.id;
-                });
-
-                if (found !== -1) {
-                  newTasks[found] = data;
-                  _this3.tasks = newTasks;
-                }
-
+                outdatedTask = _this3.parent(_this3.tasks, 'id', task.id);
+                outdatedTask.task = data.task;
+                outdatedTask.status = data.status;
                 _this3.dialog = false;
                 _this3.task = null;
                 taskForm && taskForm.clearForm();
@@ -2302,6 +2223,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
                 if (response && response.data && response.data.errors) {
                   _this3.validationErrors = response.data.errors;
+                } else {
+                  console.log(_context3.t0);
                 }
 
               case 20:
@@ -2319,7 +2242,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this4 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee4() {
-        var isDeleting, newTasks, found;
+        var isDeleting;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
@@ -2343,34 +2266,26 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 });
 
               case 8:
-                newTasks = _toConsumableArray(_this4.tasks);
-                found = newTasks.findIndex(function (task) {
-                  return task.id === selectedTask.id;
-                });
+                _this4.deleteItems(_this4.tasks, selectedTask.id);
 
-                if (found !== -1) {
-                  newTasks.splice(found, 1);
-                  _this4.tasks = newTasks;
-                }
-
-                _context4.next = 16;
+                _context4.next = 14;
                 break;
 
-              case 13:
-                _context4.prev = 13;
+              case 11:
+                _context4.prev = 11;
                 _context4.t0 = _context4["catch"](5);
                 console.log(_context4.t0);
 
-              case 16:
+              case 14:
                 _this4.isDeleting = false;
                 _this4.task = null;
 
-              case 18:
+              case 16:
               case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4, null, [[5, 13]]);
+        }, _callee4, null, [[5, 11]]);
       }))();
     },
     onSave: function onSave(params) {
@@ -2414,6 +2329,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           }
         }, _callee5);
       }))();
+    },
+    parent: function parent(array, key, id) {
+      var o;
+      array.some(function iter(a) {
+        if (a[key] === id) {
+          o = a;
+          return true;
+        }
+
+        return Array.isArray(a.deep_sub_tasks) && iter && a.deep_sub_tasks.some(iter);
+      });
+      return o;
+    },
+    deleteItems: function deleteItems(array, id) {
+      var i = array.length;
+
+      while (i--) {
+        if (array[i].id === id) {
+          array.splice(i, 1);
+          return;
+        }
+
+        array[i].deep_sub_tasks && this.deleteItems(array[i].deep_sub_tasks, id);
+      }
+    },
+    download: function download() {
+      window.open('/tasks/download', '_blank');
     }
   },
   props: {
@@ -2972,6 +2914,56 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'RecursiveList',
   props: {
@@ -3321,7 +3313,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "ul {\n  list-style: none;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".custom-toolbar-grid .v-toolbar__content {\n  display: grid;\n  grid-template-columns: 1fr 6.25rem 6.25rem;\n  grid-gap: 1rem;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4072,6 +4064,30 @@ ___CSS_LOADER_EXPORT___.push([module.id, ".theme--light.v-sheet {\n  background-
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[3]!./node_modules/vuetify/src/components/VSpeedDial/VSpeedDial.sass":
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[3]!./node_modules/vuetify/src/components/VSpeedDial/VSpeedDial.sass ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, ".v-speed-dial {\n  position: relative;\n  z-index: 1;\n}\n.v-speed-dial--absolute {\n  position: absolute;\n}\n.v-speed-dial--fixed {\n  position: fixed;\n}\n.v-speed-dial--fixed, .v-speed-dial--absolute {\n  z-index: 4;\n}\n.v-speed-dial--fixed > .v-btn--floating, .v-speed-dial--absolute > .v-btn--floating {\n  margin: 0;\n}\n.v-speed-dial--top {\n  top: 16px;\n}\n.v-speed-dial--bottom {\n  bottom: 16px;\n}\n.v-speed-dial--left {\n  left: 16px;\n}\n.v-speed-dial--right {\n  right: 16px;\n}\n.v-speed-dial--direction-left .v-speed-dial__list, .v-speed-dial--direction-right .v-speed-dial__list {\n  height: 100%;\n  top: 0;\n  padding: 0 16px;\n}\n.v-speed-dial--direction-top .v-speed-dial__list, .v-speed-dial--direction-bottom .v-speed-dial__list {\n  left: 0;\n  width: 100%;\n}\n.v-speed-dial--direction-top .v-speed-dial__list {\n  flex-direction: column-reverse;\n  bottom: 100%;\n}\n.v-speed-dial--direction-right .v-speed-dial__list {\n  flex-direction: row;\n  left: 100%;\n}\n.v-speed-dial--direction-bottom .v-speed-dial__list {\n  flex-direction: column;\n  top: 100%;\n}\n.v-speed-dial--direction-left .v-speed-dial__list {\n  flex-direction: row-reverse;\n  right: 100%;\n}\n\n/** Elements */\n.v-speed-dial__list {\n  align-items: center;\n  display: flex;\n  justify-content: center;\n  padding: 16px 0;\n  position: absolute;\n}\n.v-speed-dial__list .v-btn {\n  margin: 6px;\n}\n\n/** Modifiers */\n.v-speed-dial:not(.v-speed-dial--is-active) .v-speed-dial__list {\n  pointer-events: none;\n}", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[3]!./node_modules/vuetify/src/components/VSubheader/VSubheader.sass":
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[3]!./node_modules/vuetify/src/components/VSubheader/VSubheader.sass ***!
@@ -4138,6 +4154,30 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, ".theme--light.v-toolbar.v-sheet {\n  background-color: #FFFFFF;\n}\n\n.theme--dark.v-toolbar.v-sheet {\n  background-color: #272727;\n}\n\n.v-sheet.v-toolbar {\n  border-radius: 0;\n}\n.v-sheet.v-toolbar:not(.v-sheet--outlined) {\n  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);\n}\n.v-sheet.v-toolbar.v-sheet--shaped {\n  border-radius: 24px 0;\n}\n\n.v-toolbar {\n  contain: layout;\n  display: block;\n  flex: 1 1 auto;\n  max-width: 100%;\n  transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1) transform, 0.2s cubic-bezier(0.4, 0, 0.2, 1) background-color, 0.2s cubic-bezier(0.4, 0, 0.2, 1) left, 0.2s cubic-bezier(0.4, 0, 0.2, 1) right, 280ms cubic-bezier(0.4, 0, 0.2, 1) box-shadow, 0.25s cubic-bezier(0.4, 0, 0.2, 1) max-width, 0.25s cubic-bezier(0.4, 0, 0.2, 1) width;\n  position: relative;\n  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);\n}\n.v-toolbar .v-input {\n  padding-top: 0;\n  margin-top: 0;\n}\n\n.v-toolbar__content,\n.v-toolbar__extension {\n  padding: 4px 16px;\n}\n.v-toolbar__content .v-btn.v-btn--icon.v-size--default,\n.v-toolbar__extension .v-btn.v-btn--icon.v-size--default {\n  height: 48px;\n  width: 48px;\n}\n.v-application--is-ltr .v-toolbar__content > .v-btn.v-btn--icon:first-child,\n.v-application--is-ltr .v-toolbar__extension > .v-btn.v-btn--icon:first-child {\n  margin-left: -12px;\n}\n.v-application--is-rtl .v-toolbar__content > .v-btn.v-btn--icon:first-child,\n.v-application--is-rtl .v-toolbar__extension > .v-btn.v-btn--icon:first-child {\n  margin-right: -12px;\n}\n.v-application--is-ltr .v-toolbar__content > .v-btn.v-btn--icon:first-child + .v-toolbar__title,\n.v-application--is-ltr .v-toolbar__extension > .v-btn.v-btn--icon:first-child + .v-toolbar__title {\n  padding-left: 20px;\n}\n.v-application--is-rtl .v-toolbar__content > .v-btn.v-btn--icon:first-child + .v-toolbar__title,\n.v-application--is-rtl .v-toolbar__extension > .v-btn.v-btn--icon:first-child + .v-toolbar__title {\n  padding-right: 20px;\n}\n.v-application--is-ltr .v-toolbar__content > .v-btn.v-btn--icon:last-child,\n.v-application--is-ltr .v-toolbar__extension > .v-btn.v-btn--icon:last-child {\n  margin-right: -12px;\n}\n.v-application--is-rtl .v-toolbar__content > .v-btn.v-btn--icon:last-child,\n.v-application--is-rtl .v-toolbar__extension > .v-btn.v-btn--icon:last-child {\n  margin-left: -12px;\n}\n.v-toolbar__content > .v-tabs,\n.v-toolbar__extension > .v-tabs {\n  height: inherit;\n  margin-top: -4px;\n  margin-bottom: -4px;\n}\n.v-toolbar__content > .v-tabs > .v-slide-group.v-tabs-bar,\n.v-toolbar__extension > .v-tabs > .v-slide-group.v-tabs-bar {\n  background-color: inherit;\n  height: inherit;\n}\n.v-toolbar__content > .v-tabs:first-child,\n.v-toolbar__extension > .v-tabs:first-child {\n  margin-left: -16px;\n}\n.v-toolbar__content > .v-tabs:last-child,\n.v-toolbar__extension > .v-tabs:last-child {\n  margin-right: -16px;\n}\n\n.v-toolbar__content,\n.v-toolbar__extension {\n  align-items: center;\n  display: flex;\n  position: relative;\n  z-index: 0;\n}\n\n.v-toolbar__image {\n  border-radius: inherit;\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  width: 100%;\n  z-index: 0;\n  contain: strict;\n}\n.v-toolbar__image .v-image {\n  border-radius: inherit;\n}\n\n.v-toolbar__items {\n  display: flex;\n  height: inherit;\n}\n.v-toolbar__items > .v-btn {\n  border-radius: 0;\n  height: 100% !important;\n  max-height: none;\n}\n\n.v-toolbar__title {\n  font-size: 1.25rem;\n  line-height: 1.5;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.v-toolbar.v-toolbar--absolute {\n  position: absolute;\n  top: 0;\n  z-index: 1;\n}\n\n.v-toolbar.v-toolbar--bottom {\n  top: initial;\n  bottom: 0;\n}\n\n.v-toolbar.v-toolbar--collapse .v-toolbar__title {\n  white-space: nowrap;\n}\n\n.v-toolbar.v-toolbar--collapsed {\n  max-width: 112px;\n  overflow: hidden;\n}\n.v-application--is-ltr .v-toolbar.v-toolbar--collapsed {\n  border-bottom-right-radius: 24px;\n}\n.v-application--is-rtl .v-toolbar.v-toolbar--collapsed {\n  border-bottom-left-radius: 24px;\n}\n.v-toolbar.v-toolbar--collapsed .v-toolbar__title,\n.v-toolbar.v-toolbar--collapsed .v-toolbar__extension {\n  display: none;\n}\n\n.v-toolbar--dense .v-toolbar__content,\n.v-toolbar--dense .v-toolbar__extension {\n  padding-top: 0;\n  padding-bottom: 0;\n}\n\n.v-toolbar--flat {\n  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12) !important;\n}\n\n.v-toolbar--floating {\n  display: inline-flex;\n}\n\n.v-toolbar--prominent .v-toolbar__content {\n  align-items: flex-start;\n}\n.v-toolbar--prominent .v-toolbar__title {\n  font-size: 1.5rem;\n  padding-top: 6px;\n}\n.v-toolbar--prominent:not(.v-toolbar--bottom) .v-toolbar__title {\n  align-self: flex-end;\n  padding-bottom: 6px;\n  padding-top: 0;\n}", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[3]!./node_modules/vuetify/src/components/VTooltip/VTooltip.sass":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[3]!./node_modules/vuetify/src/components/VTooltip/VTooltip.sass ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, ".v-tooltip {\n  display: none;\n}\n.v-tooltip--attached {\n  display: inline;\n}\n.v-tooltip__content {\n  background: rgba(97, 97, 97, 0.9);\n  color: #FFFFFF;\n  border-radius: 4px;\n  font-size: 14px;\n  line-height: 22px;\n  display: inline-block;\n  padding: 5px 16px;\n  position: absolute;\n  text-transform: initial;\n  width: auto;\n  opacity: 1;\n  pointer-events: none;\n}\n.v-tooltip__content--fixed {\n  position: fixed;\n}\n.v-tooltip__content[class*=-active] {\n  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);\n}\n.v-tooltip__content[class*=enter-active] {\n  transition-duration: 150ms;\n}\n.v-tooltip__content[class*=leave-active] {\n  transition-duration: 75ms;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -11839,8 +11879,18 @@ var render = function() {
                   _c(
                     "v-btn",
                     {
+                      staticClass: "mb-2 mr-2",
+                      attrs: { color: "primary" },
+                      on: { click: _vm.download }
+                    },
+                    [_vm._v("\n          Download Data\n        ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-btn",
+                    {
                       staticClass: "mb-2",
-                      attrs: { color: "primary", dark: "" },
+                      attrs: { color: "primary" },
                       on: {
                         click: function($event) {
                           _vm.dialog = true
@@ -11858,19 +11908,49 @@ var render = function() {
           _vm._v(" "),
           _c(
             "v-list",
-            _vm._l(_vm.tasks, function(task) {
-              return _c("recursive-list", {
-                key: task.id,
-                attrs: {
-                  currentTask: task,
-                  tasks: task.deep_sub_tasks,
-                  deleteTask: _vm.deleteTask,
-                  onEdit: _vm.onEdit,
-                  onAddSubtask: _vm.onAddSubtask
-                }
+            [
+              _c(
+                "v-subheader",
+                [
+                  _c(
+                    "v-toolbar",
+                    { staticClass: "custom-toolbar-grid", attrs: { flat: "" } },
+                    [
+                      _c("span", { staticClass: "font-weight-bold" }, [
+                        _vm._v("Task Name")
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        { staticClass: "text-center font-weight-bold" },
+                        [_vm._v("Status")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "span",
+                        { staticClass: "text-center font-weight-bold" },
+                        [_vm._v("Actions")]
+                      )
+                    ]
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _vm._l(_vm.tasks, function(task) {
+                return _c("recursive-list", {
+                  key: task.id,
+                  attrs: {
+                    currentTask: task,
+                    tasks: task.deep_sub_tasks,
+                    deleteTask: _vm.deleteTask,
+                    onEdit: _vm.onEdit,
+                    onAddSubtask: _vm.onAddSubtask
+                  }
+                })
               })
-            }),
-            1
+            ],
+            2
           )
         ],
         1
@@ -12425,89 +12505,268 @@ var render = function() {
         [
           _c(
             "v-toolbar",
-            { attrs: { flat: "" } },
+            { staticClass: "custom-toolbar-grid", attrs: { flat: "" } },
             [
               _c("span", [_vm._v(_vm._s(_vm.currentTask.task))]),
               _vm._v(" "),
-              _c("v-spacer"),
+              _c("span", { staticClass: "text-center text-capitalize" }, [
+                _vm._v(_vm._s(_vm.currentTask.status))
+              ]),
               _vm._v(" "),
               _c(
-                "v-btn",
-                {
-                  attrs: { text: "", fab: "", "x-small": "" },
-                  on: {
-                    click: function($event) {
-                      return _vm.deleteTask(_vm.currentTask)
-                    }
-                  }
-                },
+                "div",
+                { staticClass: "d-flex" },
                 [
-                  _c("v-icon", { attrs: { dark: "" } }, [
-                    _vm._v("\n          mdi-delete\n        ")
-                  ])
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-btn",
-                {
-                  attrs: { text: "", fab: "", "x-small": "" },
-                  on: {
-                    click: function($event) {
-                      return _vm.onEdit(_vm.currentTask)
-                    }
-                  }
-                },
-                [
-                  _c("v-icon", { attrs: { dark: "" } }, [
-                    _vm._v("\n          mdi-pencil\n        ")
-                  ])
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-btn",
-                {
-                  attrs: { text: "", fab: "", "x-small": "" },
-                  on: {
-                    click: function($event) {
-                      return _vm.onAddSubtask(_vm.currentTask)
-                    }
-                  }
-                },
-                [
-                  _c("v-icon", { attrs: { dark: "" } }, [
-                    _vm._v("\n          mdi-file-tree\n        ")
-                  ])
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-btn",
-                { attrs: { text: "", fab: "", "x-small": "" } },
-                [
-                  _c("v-icon", { attrs: { dark: "" } }, [
-                    _vm._v("\n          mdi-reorder-horizontal\n        ")
-                  ])
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-btn",
-                { attrs: { text: "", fab: "", "x-small": "" } },
-                [
-                  _c("v-icon", { attrs: { dark: "" } }, [
-                    _vm._v("\n          mdi-chevron-down\n        ")
-                  ])
+                  _c(
+                    "v-speed-dial",
+                    {
+                      attrs: { direction: "left" },
+                      scopedSlots: _vm._u([
+                        {
+                          key: "activator",
+                          fn: function() {
+                            return [
+                              _c(
+                                "v-tooltip",
+                                {
+                                  attrs: { bottom: "" },
+                                  scopedSlots: _vm._u([
+                                    {
+                                      key: "activator",
+                                      fn: function(ref) {
+                                        var on = ref.on
+                                        var attrs = ref.attrs
+                                        return [
+                                          _c(
+                                            "v-btn",
+                                            _vm._g(
+                                              _vm._b(
+                                                {
+                                                  staticClass: "elevation-0",
+                                                  attrs: {
+                                                    "x-small": "",
+                                                    text: "",
+                                                    fab: ""
+                                                  }
+                                                },
+                                                "v-btn",
+                                                attrs,
+                                                false
+                                              ),
+                                              on
+                                            ),
+                                            [
+                                              _c("v-icon", [
+                                                _vm._v(
+                                                  "\n                    mdi-pencil\n                  "
+                                                )
+                                              ])
+                                            ],
+                                            1
+                                          )
+                                        ]
+                                      }
+                                    }
+                                  ])
+                                },
+                                [
+                                  _vm._v(" "),
+                                  _c("span", [_vm._v("Click to see actions")])
+                                ]
+                              ),
+                              _vm._v(" -->\n          ")
+                            ]
+                          },
+                          proxy: true
+                        }
+                      ])
+                    },
+                    [
+                      _vm._v(" "),
+                      _c(
+                        "v-tooltip",
+                        {
+                          attrs: { bottom: "" },
+                          scopedSlots: _vm._u([
+                            {
+                              key: "activator",
+                              fn: function(ref) {
+                                var on = ref.on
+                                var attrs = ref.attrs
+                                return [
+                                  _c(
+                                    "v-btn",
+                                    _vm._g(
+                                      _vm._b(
+                                        {
+                                          attrs: {
+                                            fab: "",
+                                            "x-small": "",
+                                            color: "primary"
+                                          },
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.onAddSubtask(
+                                                _vm.currentTask
+                                              )
+                                            }
+                                          }
+                                        },
+                                        "v-btn",
+                                        attrs,
+                                        false
+                                      ),
+                                      on
+                                    ),
+                                    [
+                                      _c("v-icon", [
+                                        _vm._v(
+                                          "\n                  mdi-file-tree\n                "
+                                        )
+                                      ])
+                                    ],
+                                    1
+                                  )
+                                ]
+                              }
+                            }
+                          ])
+                        },
+                        [_vm._v(" "), _c("span", [_vm._v("Add Sub-task")])]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-tooltip",
+                        {
+                          attrs: { bottom: "" },
+                          scopedSlots: _vm._u([
+                            {
+                              key: "activator",
+                              fn: function(ref) {
+                                var on = ref.on
+                                var attrs = ref.attrs
+                                return [
+                                  _c(
+                                    "v-btn",
+                                    _vm._g(
+                                      _vm._b(
+                                        {
+                                          attrs: {
+                                            fab: "",
+                                            "x-small": "",
+                                            color: "primary"
+                                          },
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.onEdit(_vm.currentTask)
+                                            }
+                                          }
+                                        },
+                                        "v-btn",
+                                        attrs,
+                                        false
+                                      ),
+                                      on
+                                    ),
+                                    [
+                                      _c("v-icon", [
+                                        _vm._v(
+                                          "\n                  mdi-pencil\n                "
+                                        )
+                                      ])
+                                    ],
+                                    1
+                                  )
+                                ]
+                              }
+                            }
+                          ])
+                        },
+                        [_vm._v(" "), _c("span", [_vm._v("Edit Task")])]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-tooltip",
+                        {
+                          attrs: { bottom: "" },
+                          scopedSlots: _vm._u([
+                            {
+                              key: "activator",
+                              fn: function(ref) {
+                                var on = ref.on
+                                var attrs = ref.attrs
+                                return [
+                                  _c(
+                                    "v-btn",
+                                    _vm._g(
+                                      _vm._b(
+                                        {
+                                          attrs: {
+                                            fab: "",
+                                            "x-small": "",
+                                            color: "primary"
+                                          },
+                                          on: {
+                                            click: function($event) {
+                                              return _vm.deleteTask(
+                                                _vm.currentTask
+                                              )
+                                            }
+                                          }
+                                        },
+                                        "v-btn",
+                                        attrs,
+                                        false
+                                      ),
+                                      on
+                                    ),
+                                    [
+                                      _c("v-icon", [
+                                        _vm._v(
+                                          "\n                  mdi-delete\n                "
+                                        )
+                                      ])
+                                    ],
+                                    1
+                                  )
+                                ]
+                              }
+                            }
+                          ])
+                        },
+                        [_vm._v(" "), _c("span", [_vm._v("Delete Task")])]
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-btn",
+                    { attrs: { text: "", fab: "", "x-small": "" } },
+                    [
+                      _c("v-icon", [
+                        _vm._v(
+                          "\n            mdi-reorder-horizontal\n          "
+                        )
+                      ])
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-btn",
+                    { attrs: { text: "", fab: "", "x-small": "" } },
+                    [
+                      _c("v-icon", [
+                        _vm._v("\n            mdi-chevron-down\n          ")
+                      ])
+                    ],
+                    1
+                  )
                 ],
                 1
               )
-            ],
-            1
+            ]
           )
         ],
         1
@@ -13468,6 +13727,27 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/vuetify/src/components/VSpeedDial/VSpeedDial.sass":
+/*!************************************************************************!*\
+  !*** ./node_modules/vuetify/src/components/VSpeedDial/VSpeedDial.sass ***!
+  \************************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !!../../../../css-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[1]!../../../../postcss-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[2]!../../../../sass-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[3]!./VSpeedDial.sass */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[3]!./node_modules/vuetify/src/components/VSpeedDial/VSpeedDial.sass");
+if(content.__esModule) content = content.default;
+if(typeof content === 'string') content = [[module.id, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = __webpack_require__(/*! !../../../../vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js").default
+var update = add("2f4c9c3f", content, false, {});
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/vuetify/src/components/VSubheader/VSubheader.sass":
 /*!************************************************************************!*\
   !*** ./node_modules/vuetify/src/components/VSubheader/VSubheader.sass ***!
@@ -13526,6 +13806,27 @@ if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = __webpack_require__(/*! !../../../../vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js").default
 var update = add("4c386723", content, false, {});
+// Hot Module Replacement
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/vuetify/src/components/VTooltip/VTooltip.sass":
+/*!********************************************************************!*\
+  !*** ./node_modules/vuetify/src/components/VTooltip/VTooltip.sass ***!
+  \********************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(/*! !!../../../../css-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[1]!../../../../postcss-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[2]!../../../../sass-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[3]!./VTooltip.sass */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-15[0].rules[0].use[3]!./node_modules/vuetify/src/components/VTooltip/VTooltip.sass");
+if(content.__esModule) content = content.default;
+if(typeof content === 'string') content = [[module.id, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = __webpack_require__(/*! !../../../../vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js").default
+var update = add("c3dc06aa", content, false, {});
 // Hot Module Replacement
 if(false) {}
 
@@ -25980,8 +26281,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuetify_lib_components_VDialog__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! vuetify/lib/components/VDialog */ "./node_modules/vuetify/lib/components/VDialog/VDialog.js");
 /* harmony import */ var vuetify_lib_components_VList__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! vuetify/lib/components/VList */ "./node_modules/vuetify/lib/components/VList/VList.js");
 /* harmony import */ var vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! vuetify/lib/components/VGrid */ "./node_modules/vuetify/lib/components/VGrid/VSpacer.js");
-/* harmony import */ var vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! vuetify/lib/components/VToolbar */ "./node_modules/vuetify/lib/components/VToolbar/VToolbar.js");
-/* harmony import */ var vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! vuetify/lib/components/VToolbar */ "./node_modules/vuetify/lib/components/VToolbar/index.js");
+/* harmony import */ var vuetify_lib_components_VSubheader__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! vuetify/lib/components/VSubheader */ "./node_modules/vuetify/lib/components/VSubheader/VSubheader.js");
+/* harmony import */ var vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! vuetify/lib/components/VToolbar */ "./node_modules/vuetify/lib/components/VToolbar/VToolbar.js");
+/* harmony import */ var vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! vuetify/lib/components/VToolbar */ "./node_modules/vuetify/lib/components/VToolbar/index.js");
 
 
 
@@ -26011,7 +26313,8 @@ var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__
 
 
 
-_node_modules_vuetify_loader_lib_runtime_installComponents_js__WEBPACK_IMPORTED_MODULE_4___default()(component, {VBtn: vuetify_lib_components_VBtn__WEBPACK_IMPORTED_MODULE_5__.default,VCard: vuetify_lib_components_VCard__WEBPACK_IMPORTED_MODULE_6__.default,VCardTitle: vuetify_lib_components_VCard__WEBPACK_IMPORTED_MODULE_7__.VCardTitle,VDialog: vuetify_lib_components_VDialog__WEBPACK_IMPORTED_MODULE_8__.default,VList: vuetify_lib_components_VList__WEBPACK_IMPORTED_MODULE_9__.default,VSpacer: vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_10__.default,VToolbar: vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_11__.default,VToolbarTitle: vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_12__.VToolbarTitle})
+
+_node_modules_vuetify_loader_lib_runtime_installComponents_js__WEBPACK_IMPORTED_MODULE_4___default()(component, {VBtn: vuetify_lib_components_VBtn__WEBPACK_IMPORTED_MODULE_5__.default,VCard: vuetify_lib_components_VCard__WEBPACK_IMPORTED_MODULE_6__.default,VCardTitle: vuetify_lib_components_VCard__WEBPACK_IMPORTED_MODULE_7__.VCardTitle,VDialog: vuetify_lib_components_VDialog__WEBPACK_IMPORTED_MODULE_8__.default,VList: vuetify_lib_components_VList__WEBPACK_IMPORTED_MODULE_9__.default,VSpacer: vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_10__.default,VSubheader: vuetify_lib_components_VSubheader__WEBPACK_IMPORTED_MODULE_11__.default,VToolbar: vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_12__.default,VToolbarTitle: vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_13__.VToolbarTitle})
 
 
 /* hot reload */
@@ -26237,9 +26540,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_vuetify_loader_lib_runtime_installComponents_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vuetify_loader_lib_runtime_installComponents_js__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var vuetify_lib_components_VBtn__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vuetify/lib/components/VBtn */ "./node_modules/vuetify/lib/components/VBtn/VBtn.js");
 /* harmony import */ var vuetify_lib_components_VIcon__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vuetify/lib/components/VIcon */ "./node_modules/vuetify/lib/components/VIcon/VIcon.js");
-/* harmony import */ var vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vuetify/lib/components/VGrid */ "./node_modules/vuetify/lib/components/VGrid/VSpacer.js");
+/* harmony import */ var vuetify_lib_components_VSpeedDial__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vuetify/lib/components/VSpeedDial */ "./node_modules/vuetify/lib/components/VSpeedDial/VSpeedDial.js");
 /* harmony import */ var vuetify_lib_components_VSubheader__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! vuetify/lib/components/VSubheader */ "./node_modules/vuetify/lib/components/VSubheader/VSubheader.js");
 /* harmony import */ var vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! vuetify/lib/components/VToolbar */ "./node_modules/vuetify/lib/components/VToolbar/VToolbar.js");
+/* harmony import */ var vuetify_lib_components_VTooltip__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! vuetify/lib/components/VTooltip */ "./node_modules/vuetify/lib/components/VTooltip/VTooltip.js");
 
 
 
@@ -26265,7 +26569,8 @@ var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__
 
 
 
-_node_modules_vuetify_loader_lib_runtime_installComponents_js__WEBPACK_IMPORTED_MODULE_3___default()(component, {VBtn: vuetify_lib_components_VBtn__WEBPACK_IMPORTED_MODULE_4__.default,VIcon: vuetify_lib_components_VIcon__WEBPACK_IMPORTED_MODULE_5__.default,VSpacer: vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_6__.default,VSubheader: vuetify_lib_components_VSubheader__WEBPACK_IMPORTED_MODULE_7__.default,VToolbar: vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_8__.default})
+
+_node_modules_vuetify_loader_lib_runtime_installComponents_js__WEBPACK_IMPORTED_MODULE_3___default()(component, {VBtn: vuetify_lib_components_VBtn__WEBPACK_IMPORTED_MODULE_4__.default,VIcon: vuetify_lib_components_VIcon__WEBPACK_IMPORTED_MODULE_5__.default,VSpeedDial: vuetify_lib_components_VSpeedDial__WEBPACK_IMPORTED_MODULE_6__.default,VSubheader: vuetify_lib_components_VSubheader__WEBPACK_IMPORTED_MODULE_7__.default,VToolbar: vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_8__.default,VTooltip: vuetify_lib_components_VTooltip__WEBPACK_IMPORTED_MODULE_9__.default})
 
 
 /* hot reload */
@@ -79042,6 +79347,126 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/vuetify/lib/components/VSpeedDial/VSpeedDial.js":
+/*!**********************************************************************!*\
+  !*** ./node_modules/vuetify/lib/components/VSpeedDial/VSpeedDial.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _src_components_VSpeedDial_VSpeedDial_sass__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../src/components/VSpeedDial/VSpeedDial.sass */ "./node_modules/vuetify/src/components/VSpeedDial/VSpeedDial.sass");
+/* harmony import */ var _src_components_VSpeedDial_VSpeedDial_sass__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_src_components_VSpeedDial_VSpeedDial_sass__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _mixins_toggleable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../mixins/toggleable */ "./node_modules/vuetify/lib/mixins/toggleable/index.js");
+/* harmony import */ var _mixins_positionable__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/positionable */ "./node_modules/vuetify/lib/mixins/positionable/index.js");
+/* harmony import */ var _mixins_transitionable__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../mixins/transitionable */ "./node_modules/vuetify/lib/mixins/transitionable/index.js");
+/* harmony import */ var _directives_click_outside__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../directives/click-outside */ "./node_modules/vuetify/lib/directives/click-outside/index.js");
+/* harmony import */ var _util_mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../util/mixins */ "./node_modules/vuetify/lib/util/mixins.js");
+// Styles
+ // Mixins
+
+
+
+ // Directives
+
+ // Types
+
+
+/* @vue/component */
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_util_mixins__WEBPACK_IMPORTED_MODULE_1__.default)(_mixins_positionable__WEBPACK_IMPORTED_MODULE_2__.default, _mixins_toggleable__WEBPACK_IMPORTED_MODULE_3__.default, _mixins_transitionable__WEBPACK_IMPORTED_MODULE_4__.default).extend({
+  name: 'v-speed-dial',
+  directives: {
+    ClickOutside: _directives_click_outside__WEBPACK_IMPORTED_MODULE_5__.default
+  },
+  props: {
+    direction: {
+      type: String,
+      default: 'top',
+      validator: val => {
+        return ['top', 'right', 'bottom', 'left'].includes(val);
+      }
+    },
+    openOnHover: Boolean,
+    transition: {
+      type: String,
+      default: 'scale-transition'
+    }
+  },
+  computed: {
+    classes() {
+      return {
+        'v-speed-dial': true,
+        'v-speed-dial--top': this.top,
+        'v-speed-dial--right': this.right,
+        'v-speed-dial--bottom': this.bottom,
+        'v-speed-dial--left': this.left,
+        'v-speed-dial--absolute': this.absolute,
+        'v-speed-dial--fixed': this.fixed,
+        [`v-speed-dial--direction-${this.direction}`]: true,
+        'v-speed-dial--is-active': this.isActive
+      };
+    }
+
+  },
+
+  render(h) {
+    let children = [];
+    const data = {
+      class: this.classes,
+      directives: [{
+        name: 'click-outside',
+        value: () => this.isActive = false
+      }],
+      on: {
+        click: () => this.isActive = !this.isActive
+      }
+    };
+
+    if (this.openOnHover) {
+      data.on.mouseenter = () => this.isActive = true;
+
+      data.on.mouseleave = () => this.isActive = false;
+    }
+
+    if (this.isActive) {
+      let btnCount = 0;
+      children = (this.$slots.default || []).map((b, i) => {
+        if (b.tag && typeof b.componentOptions !== 'undefined' && (b.componentOptions.Ctor.options.name === 'v-btn' || b.componentOptions.Ctor.options.name === 'v-tooltip')) {
+          btnCount++;
+          return h('div', {
+            style: {
+              transitionDelay: btnCount * 0.05 + 's'
+            },
+            key: i
+          }, [b]);
+        } else {
+          b.key = i;
+          return b;
+        }
+      });
+    }
+
+    const list = h('transition-group', {
+      class: 'v-speed-dial__list',
+      props: {
+        name: this.transition,
+        mode: this.mode,
+        origin: this.origin,
+        tag: 'div'
+      }
+    }, children);
+    return h('div', data, [this.$slots.activator, list]);
+  }
+
+}));
+//# sourceMappingURL=VSpeedDial.js.map
+
+/***/ }),
+
 /***/ "./node_modules/vuetify/lib/components/VSubheader/VSubheader.js":
 /*!**********************************************************************!*\
   !*** ./node_modules/vuetify/lib/components/VSubheader/VSubheader.js ***!
@@ -79891,6 +80316,245 @@ const VToolbarItems = (0,_util_helpers__WEBPACK_IMPORTED_MODULE_0__.createSimple
   }
 });
 //# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ "./node_modules/vuetify/lib/components/VTooltip/VTooltip.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/vuetify/lib/components/VTooltip/VTooltip.js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _src_components_VTooltip_VTooltip_sass__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../src/components/VTooltip/VTooltip.sass */ "./node_modules/vuetify/src/components/VTooltip/VTooltip.sass");
+/* harmony import */ var _src_components_VTooltip_VTooltip_sass__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_src_components_VTooltip_VTooltip_sass__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _mixins_activatable__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../../mixins/activatable */ "./node_modules/vuetify/lib/mixins/activatable/index.js");
+/* harmony import */ var _mixins_colorable__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../mixins/colorable */ "./node_modules/vuetify/lib/mixins/colorable/index.js");
+/* harmony import */ var _mixins_delayable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../mixins/delayable */ "./node_modules/vuetify/lib/mixins/delayable/index.js");
+/* harmony import */ var _mixins_dependent__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../mixins/dependent */ "./node_modules/vuetify/lib/mixins/dependent/index.js");
+/* harmony import */ var _mixins_menuable__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../mixins/menuable */ "./node_modules/vuetify/lib/mixins/menuable/index.js");
+/* harmony import */ var _mixins_toggleable__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../mixins/toggleable */ "./node_modules/vuetify/lib/mixins/toggleable/index.js");
+/* harmony import */ var _util_helpers__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../util/helpers */ "./node_modules/vuetify/lib/util/helpers.js");
+/* harmony import */ var _util_console__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../util/console */ "./node_modules/vuetify/lib/util/console.js");
+/* harmony import */ var _util_mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../util/mixins */ "./node_modules/vuetify/lib/util/mixins.js");
+ // Mixins
+
+
+
+
+
+
+ // Helpers
+
+
+
+
+/* @vue/component */
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_util_mixins__WEBPACK_IMPORTED_MODULE_1__.default)(_mixins_colorable__WEBPACK_IMPORTED_MODULE_2__.default, _mixins_delayable__WEBPACK_IMPORTED_MODULE_3__.default, _mixins_dependent__WEBPACK_IMPORTED_MODULE_4__.default, _mixins_menuable__WEBPACK_IMPORTED_MODULE_5__.default, _mixins_toggleable__WEBPACK_IMPORTED_MODULE_6__.default).extend({
+  name: 'v-tooltip',
+  props: {
+    closeDelay: {
+      type: [Number, String],
+      default: 0
+    },
+    disabled: Boolean,
+    fixed: {
+      type: Boolean,
+      default: true
+    },
+    openDelay: {
+      type: [Number, String],
+      default: 0
+    },
+    openOnHover: {
+      type: Boolean,
+      default: true
+    },
+    tag: {
+      type: String,
+      default: 'span'
+    },
+    transition: String
+  },
+  data: () => ({
+    calculatedMinWidth: 0,
+    closeDependents: false
+  }),
+  computed: {
+    calculatedLeft() {
+      const {
+        activator,
+        content
+      } = this.dimensions;
+      const unknown = !this.bottom && !this.left && !this.top && !this.right;
+      const activatorLeft = this.attach !== false ? activator.offsetLeft : activator.left;
+      let left = 0;
+
+      if (this.top || this.bottom || unknown) {
+        left = activatorLeft + activator.width / 2 - content.width / 2;
+      } else if (this.left || this.right) {
+        left = activatorLeft + (this.right ? activator.width : -content.width) + (this.right ? 10 : -10);
+      }
+
+      if (this.nudgeLeft) left -= parseInt(this.nudgeLeft);
+      if (this.nudgeRight) left += parseInt(this.nudgeRight);
+      return `${this.calcXOverflow(left, this.dimensions.content.width)}px`;
+    },
+
+    calculatedTop() {
+      const {
+        activator,
+        content
+      } = this.dimensions;
+      const activatorTop = this.attach !== false ? activator.offsetTop : activator.top;
+      let top = 0;
+
+      if (this.top || this.bottom) {
+        top = activatorTop + (this.bottom ? activator.height : -content.height) + (this.bottom ? 10 : -10);
+      } else if (this.left || this.right) {
+        top = activatorTop + activator.height / 2 - content.height / 2;
+      }
+
+      if (this.nudgeTop) top -= parseInt(this.nudgeTop);
+      if (this.nudgeBottom) top += parseInt(this.nudgeBottom);
+      return `${this.calcYOverflow(top + this.pageYOffset)}px`;
+    },
+
+    classes() {
+      return {
+        'v-tooltip--top': this.top,
+        'v-tooltip--right': this.right,
+        'v-tooltip--bottom': this.bottom,
+        'v-tooltip--left': this.left,
+        'v-tooltip--attached': this.attach === '' || this.attach === true || this.attach === 'attach'
+      };
+    },
+
+    computedTransition() {
+      if (this.transition) return this.transition;
+      return this.isActive ? 'scale-transition' : 'fade-transition';
+    },
+
+    offsetY() {
+      return this.top || this.bottom;
+    },
+
+    offsetX() {
+      return this.left || this.right;
+    },
+
+    styles() {
+      return {
+        left: this.calculatedLeft,
+        maxWidth: (0,_util_helpers__WEBPACK_IMPORTED_MODULE_7__.convertToUnit)(this.maxWidth),
+        minWidth: (0,_util_helpers__WEBPACK_IMPORTED_MODULE_7__.convertToUnit)(this.minWidth),
+        opacity: this.isActive ? 0.9 : 0,
+        top: this.calculatedTop,
+        zIndex: this.zIndex || this.activeZIndex
+      };
+    }
+
+  },
+
+  beforeMount() {
+    this.$nextTick(() => {
+      this.value && this.callActivate();
+    });
+  },
+
+  mounted() {
+    if ((0,_util_helpers__WEBPACK_IMPORTED_MODULE_7__.getSlotType)(this, 'activator', true) === 'v-slot') {
+      (0,_util_console__WEBPACK_IMPORTED_MODULE_8__.consoleError)(`v-tooltip's activator slot must be bound, try '<template #activator="data"><v-btn v-on="data.on>'`, this);
+    }
+  },
+
+  methods: {
+    activate() {
+      // Update coordinates and dimensions of menu
+      // and its activator
+      this.updateDimensions(); // Start the transition
+
+      requestAnimationFrame(this.startTransition);
+    },
+
+    deactivate() {
+      this.runDelay('close');
+    },
+
+    genActivatorListeners() {
+      const listeners = _mixins_activatable__WEBPACK_IMPORTED_MODULE_9__.default.options.methods.genActivatorListeners.call(this);
+
+      listeners.focus = e => {
+        this.getActivator(e);
+        this.runDelay('open');
+      };
+
+      listeners.blur = e => {
+        this.getActivator(e);
+        this.runDelay('close');
+      };
+
+      listeners.keydown = e => {
+        if (e.keyCode === _util_helpers__WEBPACK_IMPORTED_MODULE_7__.keyCodes.esc) {
+          this.getActivator(e);
+          this.runDelay('close');
+        }
+      };
+
+      return listeners;
+    },
+
+    genActivatorAttributes() {
+      return {
+        'aria-haspopup': true,
+        'aria-expanded': String(this.isActive)
+      };
+    },
+
+    genTransition() {
+      const content = this.genContent();
+      if (!this.computedTransition) return content;
+      return this.$createElement('transition', {
+        props: {
+          name: this.computedTransition
+        }
+      }, [content]);
+    },
+
+    genContent() {
+      return this.$createElement('div', this.setBackgroundColor(this.color, {
+        staticClass: 'v-tooltip__content',
+        class: {
+          [this.contentClass]: true,
+          menuable__content__active: this.isActive,
+          'v-tooltip__content--fixed': this.activatorFixed
+        },
+        style: this.styles,
+        attrs: this.getScopeIdAttrs(),
+        directives: [{
+          name: 'show',
+          value: this.isContentActive
+        }],
+        ref: 'content'
+      }), this.getContentSlot());
+    }
+
+  },
+
+  render(h) {
+    return h(this.tag, {
+      staticClass: 'v-tooltip',
+      class: this.classes
+    }, [this.showLazyContent(() => [this.genTransition()]), this.genActivator()]);
+  }
+
+}));
+//# sourceMappingURL=VTooltip.js.map
 
 /***/ }),
 
@@ -83718,6 +84382,31 @@ function factory(prop = 'value', event = 'input') {
 
 const Toggleable = factory();
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Toggleable);
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ "./node_modules/vuetify/lib/mixins/transitionable/index.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/vuetify/lib/mixins/transitionable/index.js ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (vue__WEBPACK_IMPORTED_MODULE_0__.default.extend({
+  name: 'transitionable',
+  props: {
+    mode: String,
+    origin: String,
+    transition: String
+  }
+}));
 //# sourceMappingURL=index.js.map
 
 /***/ }),
