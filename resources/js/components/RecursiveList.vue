@@ -7,7 +7,10 @@
       >
         <span>{{currentTask.task}}</span>
         <span class="text-center text-capitalize">{{currentTask.status}}</span>
-        <div class="d-flex">
+        <div
+          v-if="!isShowingDeletedTasks"
+          class="d-flex"
+        >
           <v-speed-dial
             direction="left"
           >
@@ -28,7 +31,7 @@
                   </v-btn>
                 </template>
                 <span>Click to see actions</span>
-              </v-tooltip> -->
+              </v-tooltip>
             </template>
             <!-- add subtask fab -->
             <v-tooltip bottom>
@@ -75,7 +78,7 @@
                   color="primary"
                   v-bind="attrs"
                   v-on="on"
-                  @click="deleteTask(currentTask)"
+                  @click="onDeleteTask(currentTask)"
                 >
                   <v-icon>
                     mdi-delete
@@ -83,6 +86,25 @@
                 </v-btn>
               </template>
               <span>Delete Task</span>
+            </v-tooltip>
+            <!-- delete task fab -->
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  fab
+                  x-small
+                  color="primary"
+                  v-bind="attrs"
+                  v-on="on"
+                  v-if="currentTask.parent_id"
+                  @click="onViewDeleted(currentTask.id)"
+                >
+                  <v-icon>
+                    mdi-eye
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>View Deleted Subtask</span>
             </v-tooltip>
           </v-speed-dial>
           <v-btn
@@ -104,17 +126,41 @@
             </v-icon>
           </v-btn>
         </div>
+        <div class="d-flex" v-else>
+          <v-tooltip v-if="isShowingDeletedTasks" bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+                x-small
+                text
+                fab
+                class="elevation-0 mx-auto"
+                @click="onRestoreTask(currentTask)"
+              >
+                <v-icon>
+                  mdi-delete-restore
+                </v-icon>
+              </v-btn>
+            </template>
+            <span>Restore Deleted</span>
+          </v-tooltip>
+        </div>
       </v-toolbar>
     </v-subheader>
     <ul>
       <recursive-list
         v-for="(task) in tasks"
+        :isShowingDeletedTasks="isShowingDeletedTasks"
+        :subtask_name="subtask_name"
         :key="task.id"
         :currentTask="task"
-        :tasks="task.deep_sub_tasks"
-        :deleteTask="deleteTask"
+        :tasks="task[subtask_name]"
+        :onDeleteTask="onDeleteTask"
+        :onViewDeleted="onViewDeleted"
         :onEdit="onEdit"
         :onAddSubtask="onAddSubtask"
+        :onRestoreTask="onRestoreTask"
       />
     </ul>
   </div>
@@ -127,7 +173,11 @@ export default {
   props: {
     currentTask: Object,
     tasks: Array,
-    deleteTask: {
+    onViewDeleted: {
+      type: Function,
+      default: () => {},
+    },
+    onDeleteTask: {
       type: Function,
       default: () => {},
     },
@@ -138,6 +188,18 @@ export default {
     onAddSubtask: {
       type: Function,
       default: () => {},
+    },
+    onRestoreTask: {
+      type: Function,
+      default: () => {},
+    },
+    subtask_name: {
+      type: String,
+      default: 'deep_sub_tasks',
+    },
+    isShowingDeletedTasks: {
+      type: Boolean,
+      default: false,
     },
   },
 }

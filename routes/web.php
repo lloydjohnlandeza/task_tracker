@@ -14,7 +14,12 @@ Route::middleware(['auth'])->group(function () {
   Route::get('/', function() {
     return Auth::user();
   });
+  Route::get('/', 'UserController@welcome')->name('login');
+
   Route::get('tasks/download', 'TaskController@export');
+  Route::get('tasks/{parent}/deleted', 'TaskController@viewDeleted');
+  
+  Route::put('tasks/{id}/restore', 'TaskController@restore');
   Route::resource('tasks', TaskController::class);
 });
 Route::middleware(['guest'])->group(function () {

@@ -1,8 +1,5 @@
 <template>
-  <app-layout
-    :head="head"
-    :appName="appName"
-  >
+  <app-layout v-bind="$props">
     <v-container class="ma-auto">
       <v-layout wrap>
         <v-flex

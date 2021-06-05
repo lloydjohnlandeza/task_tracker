@@ -1,9 +1,5 @@
 <template>
-  <app-layout
-    :head="head"
-    :appName="appName"
-    :user="user"
-  >
+  <app-layout v-bind="$props">
     <v-card
       elevation="2"
     >
@@ -19,6 +15,14 @@
             @click="download"
           >
             Download Data
+          </v-btn>
+          
+          <v-btn
+            color="primary"
+            class="mb-2 mr-2"
+            @click="() => $inertia.visit('tasks/main/deleted')"
+          >
+            Deleted Tasks
           </v-btn>
           <v-btn
             color="primary"
@@ -45,7 +49,8 @@
           :key="task.id"
           :currentTask="task"
           :tasks="task.deep_sub_tasks"
-          :deleteTask="deleteTask"
+          :onViewDeleted="(id) => $inertia.visit(`tasks/${id}/deleted`)"
+          :onDeleteTask="onDeleteTask"
           :onEdit="onEdit"
           :onAddSubtask="onAddSubtask"
         />
@@ -143,7 +148,7 @@
           const { data } = await axios.post('/tasks', params).catch((err) => {
             throw(err)
           })
-          let outdatedParentTask = this.parent(this.tasks, 'id', parent_id)
+          let outdatedParentTask = this.getParent(this.tasks, 'id', parent_id)
           outdatedParentTask.deep_sub_tasks = [ ...outdatedParentTask.deep_sub_tasks, data]
           this.dialog = false
           taskForm && taskForm.clearForm()
@@ -165,7 +170,7 @@
           const { data } = await axios.put(`/tasks/${task.id}`, { ...params, parent_id: task.parent_id }).catch((err) => {
             throw(err)
           })
-          let outdatedTask = this.parent(this.tasks, 'id', task.id)
+          let outdatedTask = this.getParent(this.tasks, 'id', task.id)
           outdatedTask.task = data.task
           outdatedTask.status = data.status
           this.dialog = false
@@ -181,7 +186,15 @@
         }
         this.isSubmitting = false
       },
-      async deleteTask (selectedTask) {
+      async onDeleteTask (selectedTask) {
+        const title = 'Delete Task'
+        let description = 'Are you sure you want to delete this task?'
+        if (selectedTask.parent_id !== 0) {
+          description = `${description} Parent task will be deleted as well`
+        }
+        if (!await this.confirmAction(title, description)) {
+          return
+        }
         const { isDeleting } = this
         if (isDeleting) {
           return
@@ -192,7 +205,7 @@
           await axios.delete(`/tasks/${selectedTask.id}`).catch((err) => {
             throw(err)
           })
-          this.deleteItems(this.tasks, selectedTask.id)
+          this.deleteItem(this.tasks, selectedTask.id)
         } catch (err) {
           console.log(err)
         }
@@ -221,7 +234,8 @@
         this.parent_id = selectedTask.id
         this.dialog = true
       },
-      parent (array, key, id) {
+      // get parent base on task id
+      getParent (array, key, id) {
         let o
         array.some(function iter(a) {
           if (a[key] === id) {
@@ -232,18 +246,24 @@
         })
         return o
       },
-      deleteItems(array, id) {
+      /**
+       * @param  (array: this.tasks reference, id: task id)
+       */
+      deleteItem(array, id) {
         var i = array.length
         while (i--) {
           if (array[i].id === id) {
             array.splice(i, 1)
             return
           }
-          array[i].deep_sub_tasks && this.deleteItems(array[i].deep_sub_tasks, id)
+          array[i].deep_sub_tasks && this.deleteItem(array[i].deep_sub_tasks, id)
         }
       },
       download () {
         window.open('/tasks/download', '_blank')
+      },
+      async confirmAction (title, description) {
+        return await this.$root.$confirm(title, description)
       },
     },
     props: {

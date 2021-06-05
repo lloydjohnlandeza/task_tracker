@@ -23,10 +23,22 @@ class Task extends Model
     public function sub_tasks() {
       return $this->hasMany(Task::class, 'parent_id', 'id');
     }
+
+    public function deep_parent_task() {
+      return $this->belongsTo(Task::class, 'parent_id', 'id')->with('deep_parent_task');
+    }
+
     public function deep_sub_tasks() {
       return $this->hasMany(Task::class, 'parent_id', 'id')->with('deep_sub_tasks');
     }
-    
+
+    public function deleted_deep_sub_tasks() {
+      return $this->hasMany(Task::class, 'parent_id', 'id')->with(['deleted_deep_sub_tasks' => function ($query) {
+          $query->withTrashed()
+          ->where('deleted_at', '!=', null)
+          ->orderBy('deleted_at', 'desc');
+        }]);
+    }
     public function order() {
       return $this->belongsTo(Order::class);
     }
@@ -35,5 +47,17 @@ class Task extends Model
     }
     public function getStatusAttribute () {
       return $this->task_status->status;
+    }
+
+    public static function boot() {
+      parent::boot();
+      static::deleting(function($task) {
+        // delete order
+        $task->order()->delete();
+        // delete all subtask while parent is being deleted
+        foreach($task->deep_sub_tasks as $subtask){
+          $subtask->delete();
+        }
+      });
     }
 }

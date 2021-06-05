@@ -1,13 +1,24 @@
 <template>
-  <div>
-    <h1>{{this.status}}</h1>
-    <div>{{ description }}</div>
-  </div>
+  <app-layout :head="{ title: '404 Page' }">
+    <v-container class="ma-auto">
+      <h3 class="text-center headline">
+        {{title}}
+      </h3>
+      <p class="text-center">
+        {{description}}
+      </p>
+    </v-container>
+  </app-layout>
 </template>
 
 <script>
+import AppLayout from '../components/AppLayout'
+
 export default {
-  props: {
+  components: {
+    AppLayout,
+  },
+  props:{
     status: Number,
   },
   computed: {

@@ -17,6 +17,7 @@ class CreateOrdersTable extends Migration
           $table->id();
           $table->integer('order');
           $table->integer('task_parent_id')->default('0');
+          $table->index(['task_parent_id']);
           $table->timestamps();
         });
     }

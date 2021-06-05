@@ -29,6 +29,7 @@ class TaskController extends Controller
                   ->where('user_id', Auth::user()->id)
                   ->join('orders', 'orders.id', '=', 'tasks.order_id')
                   ->orderBy('orders.order' , 'asc')
+                  ->orderBy('tasks.updated_at' , 'desc')
                   ->with('deep_sub_tasks')
                   ->get();
       return Inertia::render('Task/Index', [
@@ -76,6 +77,8 @@ class TaskController extends Controller
       $created->order_id = $created_order->id;
       $created->save();
       $created->order = $created_order->order;
+      // load relation
+      $created->deep_sub_tasks;
       return $created;
     }
 
@@ -139,13 +142,57 @@ class TaskController extends Controller
       ]);
     }
     /**
+     * Restore Deleted Ids
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function restore($id)
+    {
+      Task::withTrashed()->find($id)->restore();
+      return response()->json([
+        'message' => 'Task successfully restored',
+        'id' => $id
+      ]);
+    }
+    /**
+     * Display listing of deleted tasks
+     * @return \Illuminate\Http\Response
+     */
+    public function viewDeleted ($parent_id) {
+      if ($parent_id === 'main') {
+        $parent_id = 0;
+      } else if ((int)$parent_id === 0) {
+        // redirect to 404
+        return abort(404);
+      }
+      $tasks = Task::withTrashed()
+                ->where('deleted_at', '!=', null)
+                ->where('parent_id', $parent_id)
+                ->orderBy('deleted_at', 'desc')
+                ->get();
+      return Inertia::render('Task/Deleted', [
+        'head' => [
+          'title' => 'Deleted Tasks'
+        ],
+        'initialTasks' => $tasks,
+      ]);
+    }
+
+    /**
      * Download tasks as excel.
      *
-     * @return \Illuminate\Http\Response
+     * @return ExcelFile
      */
     public function export () {
       return Excel::download(new TasksExport, 'tasks.xlsx');
     }
+
+    /**
+     * Create order based on created task.
+     * @param  Task
+     * @return \Illuminate\Http\Response
+     */
     private function createOrder ($created) {
       // find max order of the tasks
       $max = Order::where('task_parent_id', $created->parent_id)->max('order');

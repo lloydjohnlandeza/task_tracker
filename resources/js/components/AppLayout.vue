@@ -1,61 +1,74 @@
 <template>
-  <v-app v-if="user === null">
+  <v-app>
     <inertia-head v-bind="headPrefix" />
-    <slot />
-  </v-app>
-  <v-app v-else>
-    <inertia-head v-bind="headPrefix" />
-    <v-app-bar
-      app
-      color="white"
-      flat
-    >
-      <v-container class="py-0 fill-height">
-        <v-avatar
-          class="mr-10"
-          color="grey darken-1"
-          size="32"
-        ></v-avatar>
-
-        <v-btn
-          v-for="link in links"
-          :key="link"
-          text
-        >
-          {{ link }}
-        </v-btn>
-        <v-spacer></v-spacer>
-        <v-responsive max-width="260">
-          <v-text-field
-            dense
-            flat
-            hide-details
-            rounded
-            solo-inverted
-          ></v-text-field>
-        </v-responsive>
-      </v-container>
-    </v-app-bar>
-    <v-main class="grey lighten-3">
-      <v-container>
-        <v-row>
-          <v-col>
-            <slot />
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
+    <template v-if="user === null">
+      <slot />
+    </template>
+    <template v-else>
+      <v-app-bar
+        app
+        color="white"
+        flat
+      >
+        <v-container class="py-0 fill-height">
+          <v-avatar
+            class="mr-10"
+            color="grey darken-1"
+            size="32"
+          ></v-avatar>
+          <v-btn
+            v-for="(link, key) in links"
+            text
+            :key="key"
+            @click="() => $inertia.visit(link.url)"
+          >
+            {{ link.name }}
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-responsive max-width="260">
+            <v-btn
+              class="d-block ml-auto"
+              text
+              @click="() => $inertia.post('/logout')"
+            >
+              Logout
+            </v-btn>
+          </v-responsive>
+        </v-container>
+      </v-app-bar>
+      <v-main class="grey lighten-3">
+        <v-container>
+          <v-row>
+            <v-col>
+              <slot />
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-main>
+    </template>
+    <confirm ref="confirm"></confirm>
   </v-app>
 </template>
 
 <script>
+import Confirm from './Confirm'
 export default {
+  mounted () {
+    this.$root.$confirm = this.$refs.confirm.open
+  },
+  components: {
+    Confirm,
+  },
   data: () => ({
     links: [
-      'Dashboard',
-      'Messages',
-      'Profile',
-      'Updates',
+      {
+        name: 'Dashboard',
+        url: '/',
+      },
+      {
+        name: 'Tasks',
+        url: '/tasks',
+      },
     ],
   }),
   props: {
@@ -70,7 +83,7 @@ export default {
     },
     appName: {
       type: String,
-      required: true,
+      default: 'App Tracker',
     },
     user: {
       type: Object,
