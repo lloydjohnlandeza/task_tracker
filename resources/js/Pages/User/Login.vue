@@ -41,7 +41,7 @@
                 :hide-details="!errors.password"
                 :error="errors.password && errors.email"
                 :error-messages="errors.password"
-                @:keyup.enter="submit"
+                @keyup.enter="submit"
               />
             </v-card-text>
             <v-divider />

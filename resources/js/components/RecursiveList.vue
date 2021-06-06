@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-subheader
-      draggable
+      :draggable="isShowingDeletedTasks ? false : true"
       @dragover.prevent
       @dragenter.prevent
       @drop='onDrop($event, currentTask)'
@@ -10,11 +10,13 @@
       <v-toolbar
         flat
         class="custom-toolbar-grid cursor-move"
+        :class="!isShowingDeletedTasks ? 'cursor-move' : ''"
       >
         <span>{{currentTask.task}}</span>
         <v-menu
           bottom
           left
+          v-if="!isShowingDeletedTasks"
         >
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -40,13 +42,14 @@
             </v-list-item>
           </v-list>
         </v-menu>
+        <span v-else>{{currentTask.task}}</span>
         <div
-          v-if="!isShowingDeletedTasks"
           class="d-flex"
         >
           <v-speed-dial
             direction="left"
-            class="ml-auto"
+            class="ma-auto"
+            v-if="!isShowingDeletedTasks"
           >
             <template v-slot:activator>
               <v-tooltip bottom>
@@ -130,7 +133,6 @@
                   color="primary"
                   v-bind="attrs"
                   v-on="on"
-                  v-if="currentTask.parent_id"
                   @click="onViewDeleted(currentTask.id)"
                 >
                   <v-icon>
@@ -141,19 +143,7 @@
               <span>View Deleted Subtask</span>
             </v-tooltip>
           </v-speed-dial>
-          <v-btn
-            text
-            fab
-            x-small
-            class="mr-auto"
-          >
-            <v-icon>
-              mdi-chevron-down
-            </v-icon>
-          </v-btn>
-        </div>
-        <div class="d-flex" v-else>
-          <v-tooltip v-if="isShowingDeletedTasks" bottom>
+          <v-tooltip v-else bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 v-bind="attrs"

@@ -15,7 +15,7 @@ Route::middleware(['auth'])->group(function () {
     return Auth::user();
   });
   Route::get('/', 'UserController@welcome')->name('login');
-  Route::get('tasks/download', 'TaskController@export');
+  Route::get('tasks/download/excel', 'TaskController@exportExcel');
   Route::get('tasks/download/csv', 'TaskController@exportCsv');
   Route::get('tasks/download/json', 'TaskController@exportJson');
 

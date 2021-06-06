@@ -81,11 +81,13 @@
         }
       },
       isEmpty () {
-        this.data.forEach(element => {
+        const { data } = this
+        for (let index = 0; index < data.length; index++) {
+          const element = data[index];
           if (element != 0) {
-            return false
+            return false 
           }
-        })
+        }
         return true
       },
     },

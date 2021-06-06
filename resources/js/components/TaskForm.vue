@@ -43,6 +43,7 @@
         color="blue darken-1"
         text
         :loading="loading"
+        :disabled="form.status === '' && form.task === ''"
         @click="save"
       >
         Save

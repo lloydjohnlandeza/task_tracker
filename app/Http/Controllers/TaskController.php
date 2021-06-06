@@ -162,11 +162,16 @@ class TaskController extends Controller
                 ->where('parent_id', $parent_id)
                 ->orderBy('deleted_at', 'desc')
                 ->get();
+      $taskStatuses = $this->getTaskStatuses();
+
       return Inertia::render('Task/Deleted', [
         'head' => [
           'title' => 'Deleted Tasks'
         ],
         'initialTasks' => $tasks,
+        'statuses' => $taskStatuses['statuses'],
+        'colors' => $taskStatuses['colors'],
+        'parent_id' => $parent_id
       ]);
     }
 
@@ -175,7 +180,7 @@ class TaskController extends Controller
      *
      * @return ExcelFile
      */
-    public function export () {
+    public function exportExcel () {
       return Excel::download(new TasksExport, 'tasks.xlsx');
     }
     /**

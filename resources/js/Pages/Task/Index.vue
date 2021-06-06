@@ -10,14 +10,36 @@
         >
           <v-toolbar-title>My tasks</v-toolbar-title>
         </v-toolbar>
-        <v-btn
-          color="primary"
+        <v-speed-dial
+          direction="bottom"
           class="mb-2 mr-2"
-          @click="download"
         >
-          Download
-        </v-btn>
-
+          <template v-slot:activator>
+            <v-btn
+              v-bind="attrs"
+              v-on="on"
+              color="primary"
+              class="elevation-0"
+            >
+              Download
+            </v-btn>
+          </template>
+          <v-btn
+            @click="download('excel')"
+          >
+            Excel
+          </v-btn>
+          <v-btn
+            @click="download('csv')"
+          >
+            CSV
+          </v-btn>
+          <v-btn
+            @click="download('json')"
+          >
+            JSON
+          </v-btn>
+        </v-speed-dial>
         <v-btn
           color="primary"
           class="mb-2 mr-2"
@@ -226,7 +248,7 @@
       },
       async swapTask (firstTask, secondTask) {
         if (firstTask.parent_id !== secondTask.parent_id) {
-          this.$root.$snackbar('Task should have the same parent to be re-order')
+          this.$root.$snackbar('Tasks should be within the same parent to be re-ordered')
           return
         }
         const params = {
@@ -311,8 +333,8 @@
           array[i].deep_sub_tasks && this.deleteItem(array[i].deep_sub_tasks, id)
         }
       },
-      download () {
-        window.open('/tasks/download', '_blank')
+      download (type) {
+        window.open(`/tasks/download/${type}`, '_blank')
       },
       async confirmAction (title, description) {
         return await this.$root.$confirm(title, description)

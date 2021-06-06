@@ -19,7 +19,8 @@
                 mdi-chevron-left
               </v-icon>
             </v-btn>
-            My Deleted Tasks
+            <span v-if="parent_id == 0">My Deleted Tasks</span>
+            <span v-else>My Deleted SubTask</span>
           </v-toolbar-title>
         </v-toolbar>
       </v-card-title>
@@ -43,6 +44,7 @@
             :currentTask="task"
             :tasks="task.deleted_deep_sub_tasks"
             :onRestoreTask="onRestoreTask"
+            :colors="colors"
           />
         </template>
         <v-card-title class="justify-center grey--text" v-else>
@@ -95,7 +97,6 @@
         validationErrors: {},
         task: null,
         tasks: [],
-        parent_id: null,
       }
     },
     methods: {
@@ -147,6 +148,14 @@
       },
       initialTasks: {
         type: Array,
+        required: true,
+      },
+      colors: {
+        type: Object,
+        required: true,
+      },
+      parent_id: {
+        type: [String , Number],
         required: true,
       },
     },
