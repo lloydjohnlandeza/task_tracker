@@ -5,7 +5,10 @@
       elevation="0"
     >
       <v-card-title>
-        <div class="ma-auto" v-if="isEmpty">Create task to view graph</div>
+        <div class="ma-auto text-center" v-if="isEmpty">
+          <div class="ma-auto">No data available.</div>
+          <div class="ma-auto text-body-1">Create a data first under Tasks tab for the graph to display</div>
+        </div>
         <span v-else>Tasks Chart</span>
       </v-card-title>
       <task-chart

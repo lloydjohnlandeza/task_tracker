@@ -16,8 +16,6 @@
         >
           <template v-slot:activator>
             <v-btn
-              v-bind="attrs"
-              v-on="on"
               color="primary"
               class="elevation-0"
             >
