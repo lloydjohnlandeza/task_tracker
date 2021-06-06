@@ -20,7 +20,6 @@
         >
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              x-small
               v-bind="attrs"
               v-on="on"
               text
@@ -42,7 +41,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <span v-else>{{currentTask.task}}</span>
+        <v-btn  text class="ma-auto" :color="colors[currentTask.status]" v-else>{{currentTask.status}}</v-btn>
         <div
           class="d-flex"
         >
