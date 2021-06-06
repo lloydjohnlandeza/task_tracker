@@ -30,17 +30,16 @@
                 outlined
                 label="Email"
                 type="email"
-                :error="errors.password && errors.email"
-                :error-messages="errors.password && errors.email ? errors.email : ''"
+                :error="errors.email"
+                :error-messages="errors.email"
               />
               <v-text-field
                 v-model="form.password"
                 outlined
                 label="Password"
                 type="password"
-                :hide-details="!errors.password"
-                :error="errors.password && errors.email"
-                :error-messages="errors.password"
+                :error="errors.password || errors.email"
+                :error-messages="errors.password ? errors.password : errors.email"
                 @keyup.enter="submit"
               />
             </v-card-text>
