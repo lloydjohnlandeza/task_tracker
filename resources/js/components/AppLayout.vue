@@ -11,11 +11,6 @@
         flat
       >
         <v-container class="py-0 fill-height">
-          <v-avatar
-            class="mr-10"
-            color="grey darken-1"
-            size="32"
-          ></v-avatar>
           <v-btn
             v-for="(link, key) in links"
             text
@@ -46,18 +41,23 @@
         </v-container>
       </v-main>
     </template>
-    <confirm ref="confirm"></confirm>
+    <confirm ref="confirm" />
+    <snackbar ref="snackbar" />
   </v-app>
 </template>
 
 <script>
 import Confirm from './Confirm'
+import Snackbar from './Snackbar.vue'
 export default {
   mounted () {
     this.$root.$confirm = this.$refs.confirm.open
+    this.$root.$snackbar = this.$refs.snackbar.open
+
   },
   components: {
     Confirm,
+    Snackbar,
   },
   data: () => ({
     links: [

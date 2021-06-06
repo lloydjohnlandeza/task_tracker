@@ -100,6 +100,7 @@
     },
     methods: {
       async onRestoreTask ({ id }) {
+        if (await this.$root.$confirm('Restore Task', 'Are you sure you want to restore this task?', { color: 'warning' }))
         try {
           await axios.put(`/tasks/${id}/restore`).catch((err) => {
             throw(err)

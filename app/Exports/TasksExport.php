@@ -3,7 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Task;
-
+use App\Models\TaskStatus;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Auth;
@@ -18,12 +18,9 @@ class TasksExport implements FromView
               ->orderBy('orders.order' , 'asc')
               ->with('deep_sub_tasks')
               ->get();
-      $status_color = [
-        'Pending' => '#FFFF8D',
-        'Complete' => '#B9F6CA',
-        'Cancel' => '#FF9E80',
-        'Custom' => '#82B1FF'
-      ];
+      $status_color = TaskStatus::select('status', 'color')
+                      ->get()
+                      ->keyBy('status');
       return view('exports.tasks', [
         'tasks' => $tasks,
         'status_color' => $status_color

@@ -5,21 +5,18 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\TaskStatus;
+use Auth;
 class UserController extends Controller
 {
   public function welcome() {
-      $taskStatuses = TaskStatus::select('id', 'status')->withCount('tasks')->get();
-      $labels = [];
-      $data = [];
-      foreach ($taskStatuses as $key => $value) {
-        $labels[] = $value->status;
-        $data[] = $value->tasks_count;
-      }
+      $user_id = Auth::user()->id;
+      $taskStatuses = TaskStatus::select('id', 'status', 'color')
+                      ->withCount(['tasks' => function ($query) use ($user_id){
+                        $query->where('user_id', $user_id);
+                      }])->get();
+      $formatted = $this->formatTaskStatus($taskStatuses);
       return Inertia::render('User/Welcome', [
-        'chart_data' => [
-          'labels' => $labels,
-          'data' => $data
-        ],
+        'chart_data' =>  $formatted,
         'head' => [
           'title' => 'Welcome'
         ]
@@ -40,5 +37,17 @@ class UserController extends Controller
           'title' => 'Register'
         ]
       ]);
+  }
+
+  private function formatTaskStatus ($taskStatuses) {
+    $labels = [];
+    $data = [];
+    $backgroundColor = [];
+    foreach ($taskStatuses as $key => $value) {
+      $labels[] = $value->status;
+      $data[] = $value->tasks_count;
+      $backgroundColor[] = $value->color;
+    }
+    return ['labels' => $labels, 'data' => $data, 'backgroundColor' => $backgroundColor];
   }
 }

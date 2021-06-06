@@ -5,9 +5,15 @@
       elevation="0"
     >
       <v-card-title>
-        <span>Tasks Chart</span>
+        <div class="ma-auto" v-if="isEmpty">Create task to view graph</div>
+        <span v-else>Tasks Chart</span>
       </v-card-title>
-      <task-chart :styles="myStyles" :options="{ responsive: true, maintainAspectRatio: false }" :chart-data="datacollection"></task-chart>
+      <task-chart
+        v-if="!isEmpty"
+        :styles="myStyles"
+        :options="{ responsive: true, maintainAspectRatio: false }"
+        :chart-data="datacollection" 
+      />
     </v-card>
   </app-layout>
 </template>
@@ -23,22 +29,20 @@
     data () {
       return {
         datacollection: {},
-        height: 500,
+        data: [],
+        height: 70,
       }
     },
     methods: {
       fillData () {
-        const { data, labels } = this.chart_data
+        const { data, labels, backgroundColor } = this.chart_data
+        this.data = data
         this.datacollection = {
           labels: labels,
           datasets: [{
             data: data,
             fill: false,
-            backgroundColor: [
-              '#B9F6CA',
-              '#FFFF8D',
-              '#FF9E80',
-            ],
+            backgroundColor: backgroundColor,
             borderColor: '#eee',
             tension: 0.1,
           }],
@@ -72,9 +76,17 @@
     computed: {
       myStyles () {
         return {
-          height: `${this.height}px`,
+          height: `${this.height}vh`,
           position: 'relative',
         }
+      },
+      isEmpty () {
+        this.data.forEach(element => {
+          if (element != 0) {
+            return false
+          }
+        })
+        return true
       },
     },
   }

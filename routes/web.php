@@ -15,9 +15,12 @@ Route::middleware(['auth'])->group(function () {
     return Auth::user();
   });
   Route::get('/', 'UserController@welcome')->name('login');
-
   Route::get('tasks/download', 'TaskController@export');
+  Route::get('tasks/download/csv', 'TaskController@exportCsv');
+  Route::get('tasks/download/json', 'TaskController@exportJson');
+
   Route::get('tasks/{parent}/deleted', 'TaskController@viewDeleted');
+  Route::put('tasks/reorder', 'TaskController@swapOrder');
   
   Route::put('tasks/{id}/restore', 'TaskController@restore');
   Route::resource('tasks', TaskController::class);

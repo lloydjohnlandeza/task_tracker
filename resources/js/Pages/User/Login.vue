@@ -30,7 +30,8 @@
                 outlined
                 label="Email"
                 type="email"
-                :error-messages="errors.email"
+                :error="errors.password && errors.email"
+                :error-messages="errors.password && errors.email ? errors.email : ''"
               />
               <v-text-field
                 v-model="form.password"
@@ -38,7 +39,9 @@
                 label="Password"
                 type="password"
                 :hide-details="!errors.password"
+                :error="errors.password && errors.email"
                 :error-messages="errors.password"
+                @:keyup.enter="submit"
               />
             </v-card-text>
             <v-divider />

@@ -2,6 +2,7 @@
   <app-layout v-bind="$props">
     <v-card
       elevation="2"
+      :loading="isLoading"
     >
       <v-card-title>
         <v-toolbar
@@ -32,7 +33,7 @@
           New Task
         </v-btn>
       </v-card-title>
-      <v-list>
+      <v-list class="">
         <v-subheader>
           <v-toolbar
             flat
@@ -50,9 +51,13 @@
             :currentTask="task"
             :tasks="task.deep_sub_tasks"
             :onViewDeleted="(id) => $inertia.visit(`tasks/${id}/deleted`)"
-            :onDeleteTask="onDeleteTask"
-            :onEdit="onEdit"
-            :onAddSubtask="onAddSubtask"
+            :deleteTask="deleteTask"
+            :openEditDialog="openEditDialog"
+            :openSubtaskDialog="openSubtaskDialog"
+            :swapTask="swapTask"
+            :statuses="statuses"
+            :updateStatus="updateStatus"
+            :colors="colors"
           />
         </template>
         <v-card-title class="justify-center grey--text" v-else>
@@ -68,7 +73,7 @@
       <task-form
         ref="taskForm"
         :statuses="statuses"
-        :loading="isSubmitting"
+        :loading="isLoading"
         :errors="validationErrors"
         :task="task"
         :parent_id="parent_id"
@@ -112,25 +117,47 @@
           },
           { text: '', value: 'data-table-expand' },
         ],
-        isSubmitting: false,
-        isDeleting: false,
+        isLoading: false,
         validationErrors: {},
         task: null,
         tasks: [],
         parent_id: null,
       }
     },
-    methods: {
+    methods: {  
+      openEditDialog (task) {
+        this.task = task
+        this.dialog = true
+      },
+      openSubtaskDialog (selectedTask) {
+        this.parent_id = selectedTask.id
+        this.dialog = true
+      },
+      // on dialog save
+      onSave (params) {
+        const { task, parent_id } = this
+        // if parent id is not null call create subtask
+        if (parent_id) { return this.createSubTask(params, parent_id) }
+        // if task is null  call create endpoint
+        else if (task === null) { return this.createTask(params) }
+        // else call update endpoint
+        else { return this.updateTask(params)}
+      },
+      // on dialog cancel
+      onCancel () {
+        this.dialog = false
+        this.task = null
+        this.parent_id = null
+        this.clearForm()
+      },
       async createTask (params) {
-        this.isSubmitting = true
-        const { taskForm } = this.$refs
+        this.isLoading = true
         try {
           const { data } = await axios.post('/tasks', params).catch((err) => {
             throw(err)
           })
           this.tasks.push(data)
           this.dialog = false
-          taskForm && taskForm.clearForm()
         } catch (err) {
           const { response } = err
           if (response && response.data && response.data.errors) {
@@ -139,11 +166,10 @@
             console.log(err)
           }
         }
-        this.isSubmitting = false
+        this.isLoading = false
       },
       async createSubTask (params, parent_id) {
-        this.isSubmitting = true
-        const { taskForm } = this.$refs
+        this.isLoading = true
         params = {
           ...params,
           parent_id,
@@ -155,7 +181,7 @@
           let outdatedParentTask = this.getParent(this.tasks, 'id', parent_id)
           outdatedParentTask.deep_sub_tasks = [ ...outdatedParentTask.deep_sub_tasks, data]
           this.dialog = false
-          taskForm && taskForm.clearForm()
+          this.resetSelectedTask()
         } catch (err) {
           const { response } = err
           if (response && response.data && response.data.errors) {
@@ -163,14 +189,13 @@
           } else {
             console.log(err)
           }
+          this.resetSelectedTask()
         }
-        this.isSubmitting = false
-        this.parent_id = null
+        this.isLoading = false
       },
       async updateTask (params) {
-        this.isSubmitting = true
-        const { task, $refs } = this
-        const { taskForm } = $refs
+        this.isLoading = true
+        const { task } = this
         try {
           const { data } = await axios.put(`/tasks/${task.id}`, { ...params, parent_id: task.parent_id }).catch((err) => {
             throw(err)
@@ -178,20 +203,60 @@
           let outdatedTask = this.getParent(this.tasks, 'id', task.id)
           outdatedTask.task = data.task
           outdatedTask.status = data.status
+          this.resetSelectedTask()
           this.dialog = false
-          this.task = null
-          taskForm && taskForm.clearForm()
         } catch (err) {
           const { response } = err
           if (response && response.data && response.data.errors) {
             this.validationErrors = response.data.errors
           } else {
             console.log(err)
+            this.resetSelectedTask()
           }
         }
-        this.isSubmitting = false
+        this.isLoading = false
       },
-      async onDeleteTask (selectedTask) {
+      async updateStatus (task, status) {
+        this.task = task
+        await this.$nextTick()
+        this.updateTask({
+          task: task.task,
+          status: status,
+        })
+      },
+      async swapTask (firstTask, secondTask) {
+        if (firstTask.parent_id !== secondTask.parent_id) {
+          this.$root.$snackbar('Task should have the same parent to be re-order')
+          return
+        }
+        const params = {
+          firstTask: {
+            id: firstTask.id,
+            order_id: firstTask.order_id,
+          },
+          secondTask: {
+            id: secondTask.id,
+            order_id: secondTask.order_id,
+          },
+        }
+        try {
+          this.loading = true
+          this.$inertia.put('/tasks/reorder', params, {
+            preserveScroll: true,
+            onSuccess: () => {
+              this.loading = false
+            },
+            onError: errors => {
+              console.error(errors)
+              this.loading = false
+            },
+          })
+        } catch (err) {
+          console.log(err)
+          this.loading = true
+        }
+      },
+      async deleteTask (selectedTask) {
         const title = 'Delete Task'
         let description = 'Are you sure you want to delete this task?'
         if (selectedTask.parent_id !== 0) {
@@ -200,44 +265,29 @@
         if (!await this.confirmAction(title, description)) {
           return
         }
-        const { isDeleting } = this
-        if (isDeleting) {
-          return
-        }
-        this.isDeleting = true
         this.task = selectedTask
+        this.isLoading = true
         try {
           await axios.delete(`/tasks/${selectedTask.id}`).catch((err) => {
             throw(err)
           })
           this.deleteItem(this.tasks, selectedTask.id)
+          this.resetSelectedTask()
         } catch (err) {
           console.log(err)
+          this.resetSelectedTask()
         }
-        this.isDeleting = false
-        this.task = null
+        this.isLoading = false
       },
-      onSave (params) {
-        const { task, parent_id } = this
-        // if parent id is not null call create subtask
-        if (parent_id) { return this.createSubTask(params, parent_id) }
-        // if task is null  call create endpoint
-        else if (task === null) { return this.createTask(params) }
-        // else call update endpoint
-        else { return this.updateTask(params)}
-      },
-      onEdit (task) {
-        this.task = task
-        this.dialog = true
-      },
-      onCancel () {
-        this.dialog = false
-        this.task = null
+      clearForm () {
+        const { $refs } = this
+        const { taskForm } = $refs
         this.validationErrors = {}
+        taskForm && taskForm.clearForm()
       },
-      async onAddSubtask (selectedTask) {
-        this.parent_id = selectedTask.id
-        this.dialog = true
+      resetSelectedTask () {
+        this.task = null
+        this.parent_id = null
       },
       // get parent base on task id
       getParent (array, key, id) {
@@ -251,9 +301,6 @@
         })
         return o
       },
-      /**
-       * @param  (array: this.tasks reference, id: task id)
-       */
       deleteItem(array, id) {
         var i = array.length
         while (i--) {
@@ -296,19 +343,30 @@
         type: Array,
         required: true,
       },
-      order: Array,
+      colors: {
+        type: Object,
+        required: true,
+      },
+    },
+    watch: {
+      initialTasks: {
+        deep: true,
+        handler(newVal) {
+          this.tasks = newVal
+        },
+      },
+      dialog: {
+        handler (newVal) {
+          if (!newVal) {
+            this.clearForm()
+          }
+        },
+      },
     },
   }
 </script>
 
-<style lang="scss">
-  .custom-toolbar-grid {
-    .v-toolbar__content {
-      display: grid;
-      grid-template-columns: 1fr 6.25rem 6.25rem;
-      grid-gap: 1rem;
-    }
-  }
+<style scoped lang="scss">
   .table-header {
     display: grid;
     grid-template-columns: 1fr auto;

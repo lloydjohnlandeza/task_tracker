@@ -1,3 +1,11 @@
 .overflow-visible {
   overflow: visible;
 }
+.custom-toolbar-grid .v-toolbar__content {
+  display: grid;
+  grid-template-columns: 1fr 6.25rem 6.25rem;
+  grid-gap: 1rem;
+}
+.cursor-move {
+  cursor: move;
+}

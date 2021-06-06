@@ -10,6 +10,7 @@ class TaskStatus extends Model
     use HasFactory;
     public $fillable = [
       'status',
+      'color',
     ];
 
     public function tasks () {

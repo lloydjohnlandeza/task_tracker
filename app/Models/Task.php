@@ -29,7 +29,12 @@ class Task extends Model
     }
 
     public function deep_sub_tasks() {
-      return $this->hasMany(Task::class, 'parent_id', 'id')->with('deep_sub_tasks');
+      return $this->hasMany(Task::class, 'parent_id', 'id')->with(['deep_sub_tasks' => function ($q) {
+        $q->join('orders', 'orders.id', '=', 'tasks.order_id');
+        $q->orderBy('orders.order' , 'asc');
+        $q->orderBy('tasks.updated_at' , 'desc');
+        $q->select('tasks.*');
+      }]);
     }
 
     public function deleted_deep_sub_tasks() {

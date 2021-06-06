@@ -1,18 +1,52 @@
 <template>
   <div>
-    <v-subheader>
+    <v-subheader
+      draggable
+      @dragover.prevent
+      @dragenter.prevent
+      @drop='onDrop($event, currentTask)'
+      @dragstart='startDrag($event, currentTask)'
+    >
       <v-toolbar
         flat
-        class="custom-toolbar-grid"
+        class="custom-toolbar-grid cursor-move"
       >
         <span>{{currentTask.task}}</span>
-        <span class="text-center text-capitalize">{{currentTask.status}}</span>
+        <v-menu
+          bottom
+          left
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              x-small
+              v-bind="attrs"
+              v-on="on"
+              text
+              :color="colors[currentTask.status]"
+            >
+              {{currentTask.status}}
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item
+              v-for="(status, i) in statuses"
+              :key="i"
+              link
+              :disabled="status === currentTask.status"
+              @click="updateStatus(currentTask, status)"
+            >
+              {{status}}
+            </v-list-item>
+          </v-list>
+        </v-menu>
         <div
           v-if="!isShowingDeletedTasks"
           class="d-flex"
         >
           <v-speed-dial
             direction="left"
+            class="ml-auto"
           >
             <template v-slot:activator>
               <v-tooltip bottom>
@@ -42,7 +76,7 @@
                   v-bind="attrs"
                   v-on="on"
                   color="primary"
-                  @click="onAddSubtask(currentTask)"
+                  @click="openSubtaskDialog(currentTask)"
                 >
                   <v-icon>
                     mdi-file-tree
@@ -60,7 +94,7 @@
                   color="primary"
                   v-bind="attrs"
                   v-on="on"
-                  @click="onEdit(currentTask)"
+                  @click="openEditDialog(currentTask)"
                 >
                   <v-icon>
                     mdi-pencil
@@ -78,7 +112,7 @@
                   color="primary"
                   v-bind="attrs"
                   v-on="on"
-                  @click="onDeleteTask(currentTask)"
+                  @click="deleteTask(currentTask)"
                 >
                   <v-icon>
                     mdi-delete
@@ -111,15 +145,7 @@
             text
             fab
             x-small
-          >
-            <v-icon>
-              mdi-reorder-horizontal
-            </v-icon>
-          </v-btn>
-          <v-btn
-            text
-            fab
-            x-small
+            class="mr-auto"
           >
             <v-icon>
               mdi-chevron-down
@@ -156,11 +182,15 @@
         :key="task.id"
         :currentTask="task"
         :tasks="task[subtask_name]"
-        :onDeleteTask="onDeleteTask"
+        :deleteTask="deleteTask"
         :onViewDeleted="onViewDeleted"
-        :onEdit="onEdit"
-        :onAddSubtask="onAddSubtask"
+        :openEditDialog="openEditDialog"
+        :openSubtaskDialog="openSubtaskDialog"
         :onRestoreTask="onRestoreTask"
+        :swapTask="swapTask"
+        :statuses="statuses"
+        :updateStatus="updateStatus"
+        :colors="colors"
       />
     </ul>
   </div>
@@ -170,6 +200,26 @@
 <script>
 export default {
   name: 'RecursiveList',
+  data() {
+    return {
+    }
+  },
+  methods: {
+    startDrag (e, task) {
+      e.dataTransfer.setData('task', JSON.stringify({
+        id: task.id,
+        order_id: task.order_id,
+        parent_id: task.parent_id,
+      }))
+    },
+    onDrop (e, task) {
+      try {
+        this.swapTask(JSON.parse(e.dataTransfer.getData('task')), task)
+      } catch (err) {
+        console.error(err)
+      }
+    },
+  },
   props: {
     currentTask: Object,
     tasks: Array,
@@ -177,19 +227,27 @@ export default {
       type: Function,
       default: () => {},
     },
-    onDeleteTask: {
+    deleteTask: {
       type: Function,
       default: () => {},
     },
-    onEdit: {
+    updateStatus: {
       type: Function,
       default: () => {},
     },
-    onAddSubtask: {
+    openEditDialog: {
+      type: Function,
+      default: () => {},
+    },
+    openSubtaskDialog: {
       type: Function,
       default: () => {},
     },
     onRestoreTask: {
+      type: Function,
+      default: () => {},
+    },
+    swapTask: {
       type: Function,
       default: () => {},
     },
@@ -200,6 +258,14 @@ export default {
     isShowingDeletedTasks: {
       type: Boolean,
       default: false,
+    },
+    statuses: {
+      type: Array,
+      default: () => [],
+    },
+    colors: {
+      type: Object,
+      default: () => {},
     },
   },
 }
