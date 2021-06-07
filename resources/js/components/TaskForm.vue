@@ -17,6 +17,8 @@
           :error-messages="errors.status"
           :items="items"
           :search-input.sync="search"
+          persistent-hint
+          hint="Type to enter custom status"
           clearable
           outlined
           label="Status"
