@@ -13,7 +13,12 @@ class UserController extends Controller
       $taskStatuses = TaskStatus::select('id', 'status', 'color')
                       ->withCount(['tasks' => function ($query) use ($user_id){
                         $query->where('user_id', $user_id);
-                      }])->get();
+                      }])
+                      ->whereHas('tasks', function ( $query) use ($user_id){
+                        $query->where('user_id', $user_id);
+                      }, '>', 0)
+                      ->orWhereIn('id', [1,2,3])
+                      ->get();
       $formatted = $this->formatTaskStatus($taskStatuses);
       return Inertia::render('User/Welcome', [
         'chart_data' =>  $formatted,

@@ -45,7 +45,7 @@
         color="blue darken-1"
         text
         :loading="loading"
-        :disabled="search"
+        :disabled="search !== null"
         @click="save"
       >
         Save
@@ -148,6 +148,9 @@
             status: newVal.status,
           }
         },
+      },
+      'form.status' () {
+        this.search = null
       },
     },
   }
